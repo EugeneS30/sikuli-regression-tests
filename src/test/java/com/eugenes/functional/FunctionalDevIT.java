@@ -16,7 +16,7 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 //@ContextConfiguration(classes=BeansClassConfig.class)
-@CucumberOptions(features = {"classpath:test_features"})
+@CucumberOptions(features = {"classpath:sikuli_features"})
 //@CucumberOptions(dryRun = false, 
 //                 strict = true, 
 //                 features = {"classpath:sikulix_features"}, 
