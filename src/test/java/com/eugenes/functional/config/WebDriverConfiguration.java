@@ -81,6 +81,11 @@ public class WebDriverConfiguration {
     @Value("${driver.remote.capability.browser:firefox}")
     private String browser;
 
+    @Bean
+    public WaitConfiguration waitConfig() {
+        return WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
+    }
+
     @Configuration
     @Profile({"local"})
     public static class LocalFirefoxDriverConfiguration {
