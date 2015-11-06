@@ -1,6 +1,7 @@
 package com.eugenes.functional.hooks;
 
 import org.openqa.selenium.WebDriver;
+import org.sikuli.script.Screen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -15,6 +16,9 @@ public class Hook {
 
     @Autowired
     private WebDriver firefoxDriver;
+    
+    @Autowired 
+    private Screen screen;
 
     @Before
     public void setUp() {
