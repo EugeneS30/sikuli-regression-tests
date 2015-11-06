@@ -25,10 +25,10 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 public class WebDriverConfiguration {
 
     @Value("${driver.implicitlyWait.time:500}")
-    private long implicitWaitTime; // Should be long
+    private long implicitWaitTime;
 
     @Value("${driver.implicitlyWait.unit:MILLISECONDS}")
-    private TimeUnit implicitWaitUnit; // Should be TimeUnit
+    private TimeUnit implicitWaitUnit;
 
     @Autowired
     private WebDriver webDriver;
@@ -81,11 +81,11 @@ public class WebDriverConfiguration {
     @Value("${driver.remote.capability.browser:firefox}")
     private String browser;
 
-    @Bean
-    public WaitConfiguration waitConfig() {
-        return WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
-    }
-
+//    @Bean
+//    public WaitConfiguration waitConfig() {
+//        return WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
+//    }
+        
     @Configuration
     @Profile({"local"})
     public static class LocalFirefoxDriverConfiguration {
@@ -95,7 +95,7 @@ public class WebDriverConfiguration {
 
         @Value("${http.proxy.port:8080}")
         private int proxyPort;
-
+        
         @Bean(destroyMethod = "quit")
         public FirefoxDriver firefoxDriver() {
             FirefoxProfile profile = new FirefoxProfile();
@@ -119,11 +119,6 @@ public class WebDriverConfiguration {
             // profile.setEnableNativeEvents(false);
             return new FirefoxDriver(profile);
         }
-
-        // @Bean
-        // public WebDriverEnvironment localEnvironment() {
-        // return new LocalWebDriverEnvironment();
-        // }
 
     }
 
@@ -149,10 +144,13 @@ public class WebDriverConfiguration {
         window.maximize();
 
     }
-
+    
+        
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
+    
+   
 
 }
