@@ -1,9 +1,9 @@
 package com.eugenes.functional.glue.steps;
 
+import static org.fest.assertions.Assertions.assertThat;
 import lombok.extern.slf4j.Slf4j;
 
 import org.openqa.selenium.WebDriver;
-import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,22 +27,24 @@ public class searchSteps {
 
     @When("^I wait for element \"([^\"]*)\"$")
     public void i_wait_for_element(final String patternName) throws Throwable {
-//        Region reg = screen.find(patternName);
-        log.info("Waiting for element: " + patternName + ". . .");
         
-        screen.wait(patternName);
+        log.info("Waiting for element: " + patternName + ". . .");
 
+        screen.wait(patternName);
     }
 
-    @Then("^the element is located$")
-    public void the_element_is_located() throws Throwable {
+    @Then("^the element \"([^\"]*)\" exists$")
+    public void the_element_exists(final String patternName) throws Throwable {
+
+        assertThat(screen.exists(patternName)).isNotNull();
 
     }
 
     @When("^I search for element \"([^\"]*)\"$")
-    public void i_search_for_element() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void i_search_for_element(final String patternName) throws Throwable {
+        
+        screen.observe();
+        
     }
 
     @When("^I observe the screen for element \"([^\"]*)\"$")
