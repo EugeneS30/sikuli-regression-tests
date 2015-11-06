@@ -17,7 +17,7 @@ public class SikuliConfiguration {
     @Value("${sikuli.bundlePath:classpath:src/test/resources/patterns}")
     private String sikuliBundlePath;
 
-    @Value("${sikuli.autoWaitTimeout:3}")
+    @Value("${sikuli.autoWaitTimeout:5}")
     private float autoWaitTimeout;
 
     @Bean
