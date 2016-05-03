@@ -11,9 +11,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+/**
+ * @author eugene.shragovich
+ */
+
 @Configuration
 public class SikuliConfiguration {
 
+    // TODO - defining path like that doesn't work. Should be investigated. 
     @Value("${sikuli.bundlePath:classpath:src/test/resources/patterns}")
     private String sikuliBundlePath;
 
