@@ -15,6 +15,10 @@ import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+/**
+ * @author eugene.shragovich
+ */
+
 @Slf4j
 @ContextConfiguration(classes = {WebDriverConfiguration.class, SikuliConfiguration.class})
 public class searchSteps {

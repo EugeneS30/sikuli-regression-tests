@@ -5,6 +5,10 @@ import java.util.concurrent.TimeUnit;
 import lombok.Value;
 import lombok.experimental.Builder;
 
+/**
+ * @author eugene.shragovich
+ */
+
 @Builder
 @Value
 public final class WaitConfiguration {

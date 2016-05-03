@@ -19,6 +19,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+/**
+ * @author eugene.shragovich
+ */
+
 @ComponentScan
 @Configuration
 @PropertySource({"classpath:feature.properties", "classpath:feature-ext.properties"})
@@ -81,11 +85,12 @@ public class WebDriverConfiguration {
     @Value("${driver.remote.capability.browser:firefox}")
     private String browser;
 
-//    @Bean
-//    public WaitConfiguration waitConfig() {
-//        return WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
-//    }
-        
+    // @Bean
+    // public WaitConfiguration waitConfig() {
+    // return
+    // WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
+    // }
+
     @Configuration
     @Profile({"local"})
     public static class LocalFirefoxDriverConfiguration {
@@ -95,7 +100,7 @@ public class WebDriverConfiguration {
 
         @Value("${http.proxy.port:8080}")
         private int proxyPort;
-        
+
         @Bean(destroyMethod = "quit")
         public FirefoxDriver firefoxDriver() {
             FirefoxProfile profile = new FirefoxProfile();
@@ -130,8 +135,7 @@ public class WebDriverConfiguration {
         try {
             webDriver.manage().timeouts().pageLoadTimeout(pageLoadTimeoutTime, pageLoadTimeoutUnit);
         } catch (WebDriverException e) {
-            // probably running Safari, currently doesn't support page timeouts.
-            // https://code.google.com/p/selenium/issues/detail?id=6015
+            
         }
 
     }
@@ -144,13 +148,10 @@ public class WebDriverConfiguration {
         window.maximize();
 
     }
-    
-        
+
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
-    
-   
 
 }
