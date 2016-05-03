@@ -9,7 +9,7 @@ import org.sikuli.script.ImagePath;
 import org.sikuli.script.Match;
 import org.sikuli.script.Screen;
 
-public class DevTest {
+public class DevTestArea {
 
     @Test
     public void highlightTest() throws FindFailed {
