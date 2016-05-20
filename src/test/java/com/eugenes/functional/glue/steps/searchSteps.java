@@ -20,11 +20,7 @@ import cucumber.api.java.en.When;
  */
 
 @Slf4j
-@ContextConfiguration(classes = {WebDriverConfiguration.class, SikuliConfiguration.class})
-public class searchSteps {
-
-    @Autowired
-    private WebDriver driver;
+public class searchSteps extends AbstractSteps {
 
     @Autowired
     private Screen screen;
