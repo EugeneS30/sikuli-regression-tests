@@ -1,7 +1,10 @@
 @Search
 Feature: Search
 
-  Scenario: User can wait for an element to appear on a screen using wait()
+  Background: Open browser and navigate to a page
+    Given I have navigated to "http://www.sikulix.com/"
+
+  Scenario: Wait for a pattern to appear on a screen using wait()
     When I wait for element "QuickStartPlain.png"
     Then the element "QuickStartPlain.png" exists
     
