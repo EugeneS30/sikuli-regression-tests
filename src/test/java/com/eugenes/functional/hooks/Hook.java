@@ -28,7 +28,7 @@ public class Hook {
     public void prepareTest() {
 
         webDriver.manage().deleteAllCookies();
-        webDriver.get("http://www.sikulix.com");
+//        webDriver.get("http://www.sikulix.com");
     }
 
     @After
