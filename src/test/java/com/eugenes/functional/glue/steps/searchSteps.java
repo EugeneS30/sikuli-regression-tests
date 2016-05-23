@@ -1,17 +1,16 @@
 package com.eugenes.functional.glue.steps;
 
 import static org.fest.assertions.Assertions.assertThat;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import org.openqa.selenium.WebDriver;
+import org.sikuli.script.FindFailed;
+import org.sikuli.script.Match;
+import org.sikuli.script.Pattern;
 import org.sikuli.script.Screen;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.stereotype.Component;
 
-import com.eugenes.functional.config.SikuliConfiguration;
-import com.eugenes.functional.config.WebDriverConfiguration;
-
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
@@ -20,37 +19,44 @@ import cucumber.api.java.en.When;
  */
 
 @Slf4j
+@Component
 public class searchSteps extends AbstractSteps {
-
+    
     @Autowired
     private Screen screen;
+    
+    @Setter
+    private Match storedMatch;
+    
+    @Setter
+    private Pattern storedPattern;
 
-    @When("^I wait for element \"([^\"]*)\"$")
-    public void i_wait_for_element(final String patternName) throws Throwable {
+    @When("^I wait for pattern \"([^\"]*)\"$")
+    public void i_wait_for_pattern(final String patternName) throws FindFailed {
         
-        log.info("Waiting for element: " + patternName + ". . .");
+        log.info("Waiting for pattern: " + patternName + ". . .");
+        
+        storedPattern = new Pattern(patternName);
+        setStoredMatch(screen.wait(patternName));
 
-        screen.wait(patternName);
     }
 
-    @Then("^the element \"([^\"]*)\" exists$")
+    @When("^I observe the screen for pattern \"([^\"]*)\"$")
+    public void i_observe_the_screen_for_element(final String patternName) throws Throwable {
+        
+        log.info("Observing for pattern: " + patternName + ". . .");
+        
+        assertThat(screen.observe()).isTrue();
+        
+    }
+    
+    @Then("^the pattern \"([^\"]*)\" exists$")
     public void the_element_exists(final String patternName) throws Throwable {
-
-        assertThat(screen.exists(patternName)).isNotNull();
-
-    }
-
-    @When("^I search for element \"([^\"]*)\"$")
-    public void i_search_for_element(final String patternName) throws Throwable {
         
-        screen.observe();
-        
-    }
+        assertThat(screen.exists(storedPattern)).isNotNull();
+        assertThat(storedMatch.getScore()).isGreaterThan(0.95);
+        storedMatch = null;
 
-    @When("^I observe the screen for element \"([^\"]*)\"$")
-    public void i_observe_the_screen_for_element() throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
     }
 
 }
