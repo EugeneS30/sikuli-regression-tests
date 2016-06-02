@@ -26,6 +26,9 @@ public class searchSteps extends AbstractSteps {
     @Autowired
     private Screen screen;
 
+    /**
+     * If the pattern was found by one of the steps it will be stored in this variable.
+     */
     @Setter
     private Match storedMatch;
 
@@ -37,9 +40,9 @@ public class searchSteps extends AbstractSteps {
 
         log.info("Waiting for pattern: " + patternName + ". . .");
 
-        storedPattern = new Pattern(patternName);
+        setStoredPattern(new Pattern(patternName));
         setStoredMatch(screen.wait(patternName));
-
+        
     }
 
     @When("^I observe the screen for pattern \"([^\"]*)\"$")
@@ -49,15 +52,25 @@ public class searchSteps extends AbstractSteps {
 
         Region region = screen;
         region.onAppear(patternName);
+        
+        boolean result = region.observe(100); 
 
-        assertThat(region.observe(100)).isTrue();
+        assertThat(result).isTrue();
+        
+        
+        setStoredPattern(new Pattern(patternName));
+        setStoredMatch(screen.find(patternName));
+        
+        
 
     }
 
     @Then("^the pattern \"([^\"]*)\" exists$")
     public void the_element_exists(final String patternName) throws Throwable {
 
+        log.info("Checking that not null");
         assertThat(screen.exists(storedPattern)).isNotNull();
+        log.info("Checked");
         assertThat(storedMatch.getScore()).isGreaterThan(0.95);
         storedMatch = null;
 
