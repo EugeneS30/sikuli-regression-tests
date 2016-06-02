@@ -1,7 +1,6 @@
 package com.eugenes.functional;
 
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
 
 import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
@@ -13,7 +12,7 @@ import cucumber.api.junit.Cucumber;
  */
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = {"classpath:sikuli_features"}, format = {"json:target/cucumber-dev/cucumber.json", "pretty"})
+@CucumberOptions(features = {"classpath:sikuli_features"}, format = {"json:target/cucumber-dev/cucumber.json", "pretty"}, tags = {"@wip"})
 
 public class FunctionalDevIT
 {
