@@ -9,5 +9,5 @@ Feature: Search
     Then the pattern "QuickStartPlain.png" exists
    
   Scenario: User can observe the screen to find a pattern using observe()
-    When I observe the screen for pattern QuickStartPlain.png
+    When I observe the screen for pattern "QuickStartPlain.png"
     Then the pattern "QuickStartPlain.png" exists
