@@ -3,6 +3,9 @@ package com.eugenes.functional.config;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
@@ -10,7 +13,6 @@ import org.openqa.selenium.WebDriver.Window;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -34,7 +36,7 @@ public class WebDriverConfiguration {
     @Value("${driver.implicitlyWait.unit:MILLISECONDS}")
     private TimeUnit implicitWaitUnit;
 
-    @Autowired
+    @Inject
     private WebDriver webDriver;
 
     @Value("${driver.pageLoadTimeout.time:30}")
@@ -91,6 +93,7 @@ public class WebDriverConfiguration {
     // WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
     // }
 
+    @Slf4j
     @Configuration
     @Profile({"local"})
     public static class LocalFirefoxDriverConfiguration {
@@ -103,6 +106,7 @@ public class WebDriverConfiguration {
 
         @Bean(destroyMethod = "quit")
         public FirefoxDriver firefoxDriver() {
+            log.info("Creating firefoxDriver bean");
             FirefoxProfile profile = new FirefoxProfile();
 
             // Force the use of native events to prevent focus issues
