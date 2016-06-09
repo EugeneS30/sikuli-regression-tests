@@ -5,11 +5,14 @@ import javax.annotation.PostConstruct;
 import org.sikuli.basics.Settings;
 import org.sikuli.script.IScreen;
 import org.sikuli.script.ImagePath;
+import org.sikuli.script.RunTime;
 import org.sikuli.script.Screen;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+
+import java.io.File;
 
 /**
  * @author eugene.shragovich
@@ -33,7 +36,8 @@ public class SikuliConfiguration {
     @PostConstruct
     public void setSikuliSettings() {
         Settings.AutoWaitTimeout = autoWaitTimeout;
-        ImagePath.setBundlePath("C:/workspace/sikuli-regression-tests/src/test/resources/patterns/");
+        //ImagePath.setBundlePath("C:/workspace/sikuli-regression-tests/src/test/resources/patterns/");
+        ImagePath.setBundlePath(new File(RunTime.get().fSxProject, "target/test-classes/pattern").getAbsolutePath());
     }
 
     @Bean
