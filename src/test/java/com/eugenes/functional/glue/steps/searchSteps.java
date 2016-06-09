@@ -71,7 +71,8 @@ public class searchSteps extends AbstractSteps {
         log.info("Checking that not null");
         assertThat(screen.exists(storedPattern)).isNotNull();
         log.info("Checked");
-        assertThat(storedMatch.getScore()).isGreaterThan(0.95);
+        //assertThat(storedMatch.getScore()).isGreaterThan(0.95);
+        assertThat(storedMatch.getScore()).isGreaterThan(0.9);
         storedMatch = null;
 
     }
