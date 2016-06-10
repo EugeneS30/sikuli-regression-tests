@@ -1,4 +1,4 @@
-package com.eugenes.util;
+package com.eugenes.functional.util;
 
 import java.util.concurrent.TimeUnit;
 
