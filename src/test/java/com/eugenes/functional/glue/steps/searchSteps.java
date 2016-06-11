@@ -33,23 +33,30 @@ public class searchSteps extends AbstractSteps {
 
     @Autowired
     private Screen screen;
-
-    /**
-     * If the pattern was found by one of the steps it will be stored in this variable.
-     */
-    @Setter
-    private Match storedMatch;
-
+    
     @Inject
     private SikuliSupport sikuli;
 
-    @Setter
+    // If the pattern was found by one of the steps it will be stored in this variable.
+    private Match storedMatch;
+
+    public void setStoredMatch(Match storedMatch) {
+		this.storedMatch = storedMatch;
+	}
+
     private Pattern storedPattern;
     
-    @Setter
-    private boolean observationOutcome;
+    public void setStoredPattern(Pattern storedPattern) {
+		this.storedPattern = storedPattern;
+	}
+
+	private boolean observationOutcome;
     
-    @Value("${sikuli.observeTimeout.time:5}")
+    public void setObservationOutcome(boolean observationOutcome) {
+		this.observationOutcome = observationOutcome;
+	}
+
+	@Value("${sikuli.observeTimeout.time:60}")
     private float observeTimeout;
 
     @When("^I wait for pattern \"([^\"]*)\"$")
@@ -65,28 +72,35 @@ public class searchSteps extends AbstractSteps {
     @When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
     public void i_observe_the_screen_for_pattern_to(final String pattern, final String eventType) throws Throwable {
 
-        log.info("Observing for pattern: {}", pattern);
+        log.info("Setting initial outcome to False");     
+        setObservationOutcome(false);
 
         Region region = screen;
 
         switch (ObserverEvent.fromString(eventType)) {
             case ON_APPEAR:
+            	log.info("ON_APPEAR");
                 region.onAppear(pattern);
                 break;
 
             case ON_VANISH:
+            	log.info("ON_VANISH");
                 region.onVanish(pattern);
                 break;
 
             case ON_CHANGE:
+            	log.info("ON_CHANGE");
                 region.onChange();
 
             default:
                 throw new PendingException("event type not supported: " + eventType);
         }
         
-        observationOutcome = region.observe(observeTimeout);
-
+        log.info("Starting the observation");
+        boolean outcome = region.observeInBackground(observeTimeout);
+        log.info("Observation completed with result: {}! Setting the outcome accordingly", outcome);
+        setObservationOutcome(outcome);
+        
     }
 
     @Then("^the event fires$")
@@ -97,31 +111,6 @@ public class searchSteps extends AbstractSteps {
 //        setStoredPattern(new Pattern(pattern));
 //        setStoredMatch(screen.find(pattern));
  
-    }
-
-    @When("^I observe the screen for pattern \"(.*?)\" to change$")
-    public void i_observe_the_screen_for_pattern_to_change(String arg1) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
-    }
-
-    @When("^I observe the screen for pattern \"([^\"]*)\" to vanish$")
-    public void i_observe_the_screen_for_element_to_vanish(final String patternName) throws Throwable {
-
-        log.info("Observing for pattern: " + patternName + ". . .");
-
-        Region region = screen;
-        region.onVanish(patternName);
-
-        // assertThat(result).isTrue();
-
-        boolean result = region.observe(100);
-
-        assertThat(result).isTrue();
-
-        setStoredPattern(new Pattern(patternName));
-        setStoredMatch(screen.find(patternName));
-
     }
 
     @Given("^the pattern \"(.*?)\" (is|is not) visible on the screen$")
