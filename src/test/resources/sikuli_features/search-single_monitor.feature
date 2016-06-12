@@ -1,13 +1,10 @@
 @Search
 Feature: Search
 
-  Background: Open browser and navigate to a page
-    Given I have navigated to "http://www.sikulix.com/"
-
-  Scenario: Wait for a pattern to appear on a screen using wait()
-    When I wait for pattern "QuickStartPlain.png"
-    Then the pattern "QuickStartPlain.png" exists
-   
-  Scenario: User can observe the screen to find a pattern using observe()
-    When I observe the screen for pattern "QuickStartPlain.png"
-    Then the pattern "QuickStartPlain.png" exists
+  @wip
+  Scenario: Pattern is found using wait()
+    Given the pattern "QuickStartPlain.png" does not exist on the screen
+    And I wait for pattern "QuickStartPlain.png"
+    When I navigate to "http://www.sikulix.com/"
+    Then the pattern "QuickStartPlain.png" exists on the screen
+    Then the pattern "QuickStartPlain.png" is found
