@@ -113,10 +113,10 @@ public class searchSteps extends AbstractSteps {
  
     }
 
-    @Given("^the pattern \"(.*?)\" (is|is not) visible on the screen$")
-    public void the_pattern_is_visible_on_the_screen(final String pattern, final String maybe) throws Throwable {
+    @Given("^the pattern \"(.*?)\" (does|does not) exist on the screen$")
+    public void the_pattern_maybe_visible_on_the_screen(final String pattern, final String maybe) throws Throwable {
 
-        boolean isShown = "is".equals(maybe);
+        boolean isShown = "does".equals(maybe);
 
         assertThat(sikuli.doesExist(pattern)).isEqualTo(isShown);
 
