@@ -139,4 +139,7 @@
 		</plugins>
 	</build>
 
+	<properties>
+		<downloadSources>true</downloadSources>
+	</properties>
 </project>
