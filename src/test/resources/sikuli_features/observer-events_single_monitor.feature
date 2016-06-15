@@ -1,11 +1,12 @@
 @Search @Core
 Feature: Search
 
+  @wip
   Scenario: Region.observe() fires on onAppear() event
-    Given the pattern "QuickStartPlain.png" is not visible on the screen
+    Given the pattern "QuickStartPlain.png" does not exist on the screen
     When I observe the screen for pattern "QuickStartPlain.png" to "appear" 
     And I navigate to "http://sikulix.weebly.com/"
-    Then the pattern "QuickStartPlain.png" is visible on the screen
+    Then the pattern "QuickStartPlain.png" exists on the screen
     And the event fires
         
   Scenario: Region.observe() fires on onVanish() event
