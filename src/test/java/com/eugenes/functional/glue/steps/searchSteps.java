@@ -4,6 +4,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import javax.inject.Inject;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import org.sikuli.script.FindFailed;
@@ -30,123 +31,106 @@ import cucumber.api.java.en.When;
 @Component
 public class searchSteps extends AbstractSteps {
 
-	@Autowired
-	private Screen screen;
+    @Autowired
+    private Screen screen;
 
-	@Inject
-	private SikuliSupport sikuli;
+    @Inject
+    private SikuliSupport sikuli;
 
-	// If the pattern was found by one of the steps it will be stored in this
-	// variable.
-	private Match storedMatch;
+    // If the pattern was found by one of the steps it will be stored in this
+    // variable.
+    @Setter
+    private Match storedMatch;
 
-	public void setStoredMatch(Match storedMatch) {
-		this.storedMatch = storedMatch;
-	}
+    @Setter
+    private Pattern storedPattern;
 
-	private Pattern storedPattern;
+    @Setter
+    private boolean observationOutcome;
 
-	public void setStoredPattern(Pattern storedPattern) {
-		this.storedPattern = storedPattern;
-	}
+    @Value("${sikuli.observeTimeout.time:10}")
+    private float observeTimeout;
 
-	private boolean observationOutcome;
+    @Value("${sikuli.waitTimeout.time:10}")
+    private float waitTimeout;
 
-	public void setObservationOutcome(boolean observationOutcome) {
-		this.observationOutcome = observationOutcome;
-	}
+    @When("^I wait for pattern \"([^\"]*)\"$")
+    public void i_wait_for_pattern(final String patternName) throws FindFailed {
 
-	@Value("${sikuli.observeTimeout.time:60}")
-	private float observeTimeout;
+        log.info("Waiting for pattern: " + patternName + ". . .");
 
-	@Value("${sikuli.waitTimeout.time:60}")
-	private float waitTimeout;
+        setStoredPattern(new Pattern(patternName));
+        setStoredMatch(screen.wait(patternName, waitTimeout));
 
-	@When("^I wait for pattern \"([^\"]*)\"$")
-	public void i_wait_for_pattern(final String patternName) throws FindFailed {
+    }
 
-		log.info("Waiting for pattern: " + patternName + ". . .");
+    @When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
+    public void i_observe_the_screen_for_pattern_to(final String pattern, final String eventType) throws Throwable {
 
-		setStoredPattern(new Pattern(patternName));
-		setStoredMatch(screen.wait(patternName, waitTimeout));
+        log.info("Setting initial outcome to False");
+        setObservationOutcome(false);
 
-	}
+        Region region = screen;
 
-	@When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
-	public void i_observe_the_screen_for_pattern_to(final String pattern,
-			final String eventType) throws Throwable {
+        switch (ObserverEvent.fromString(eventType)) {
+            case ON_APPEAR:
+                log.info("ON_APPEAR");
+                region.onAppear(pattern);
+                break;
 
-		log.info("Setting initial outcome to False");
-		setObservationOutcome(false);
+            case ON_VANISH:
+                log.info("ON_VANISH");
+                region.onVanish(pattern);
+                break;
 
-		Region region = screen;
+            case ON_CHANGE:
+                log.info("ON_CHANGE");
+                region.onChange();
 
-		switch (ObserverEvent.fromString(eventType)) {
-		case ON_APPEAR:
-			log.info("ON_APPEAR");
-			region.onAppear(pattern);
-			break;
+            default:
+                throw new PendingException("event type not supported: " + eventType);
+        }
 
-		case ON_VANISH:
-			log.info("ON_VANISH");
-			region.onVanish(pattern);
-			break;
+        log.info("Starting the observation");
+        boolean outcome = region.observeInBackground(observeTimeout);
+        log.info("Observation completed with result: {}! Setting the outcome accordingly", outcome);
+        setObservationOutcome(outcome);
 
-		case ON_CHANGE:
-			log.info("ON_CHANGE");
-			region.onChange();
+    }
 
-		default:
-			throw new PendingException("event type not supported: " + eventType);
-		}
+    @Then("^the event fires$")
+    public void the_onAppear_event_fires() throws Throwable {
 
-		log.info("Starting the observation");
-		boolean outcome = region.observeInBackground(observeTimeout);
-		log.info(
-				"Observation completed with result: {}! Setting the outcome accordingly",
-				outcome);
-		setObservationOutcome(outcome);
+        assertThat(observationOutcome).isTrue();
 
-	}
+    }
 
-	@Then("^the event fires$")
-	public void the_onAppear_event_fires() throws Throwable {
+    @Given("^the pattern \"(.*?)\" (exists|does not exist) on the screen$")
+    public void the_pattern_maybe_visible_on_the_screen(final String pattern, final String maybe) throws Throwable {
 
-		assertThat(observationOutcome).isTrue();
+        boolean isShown = "exists".equals(maybe);
 
-		// setStoredPattern(new Pattern(pattern));
-		// setStoredMatch(screen.find(pattern));
+        if (isShown) {
+            assertThat(sikuli.doesExist(pattern)).isTrue();
+            assertThat(storedMatch.getScore()).isGreaterThan(0.9);
+            
+            resetStoredMatch();
+            
+        } else {
+            assertThat(sikuli.doesExist(pattern)).isFalse();
+        }
+        
+        
+    }
 
-	}
+    /**
+     * This method must be used after each verification so that it a subsequent tests will not be
+     * affected by past results.
+     */
+    private void resetStoredMatch() {
+        log.debug("Resetting stored Match object to null.");
+        setStoredMatch(null);
 
-	@Given("^the pattern \"(.*?)\" (exists|does not exist) on the screen$")
-	public void the_pattern_maybe_visible_on_the_screen(final String pattern,
-			final String maybe) throws Throwable {
+    }
 
-		boolean isShown = "exists".equals(maybe);
-		
-		if (isShown) {
-			assertThat(sikuli.doesExist(pattern)).isTrue();
-			assertThat(storedMatch.getScore()).isGreaterThan(0.9);
-			storedMatch = null;
-			storedPattern = null;
-		} else {
-			assertThat(sikuli.doesExist(pattern)).isFalse();
-		}
-
-		
-
-	}
-
-//	@Then("^the pattern \"([^\"]*)\" exists$")
-//	public void the_element_exists(final String patternName) throws Throwable {
-//
-//		log.info("Checking that not null");
-//		assertThat(screen.exists(storedPattern)).isNotNull();
-//		log.info("Checked");
-//		// assertThat(storedMatch.getScore()).isGreaterThan(0.95);
-//		assertThat(storedMatch.getScore()).isGreaterThan(0.9);
-//		storedMatch = null;
-//
-//	}
 }
