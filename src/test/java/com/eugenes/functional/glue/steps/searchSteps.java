@@ -111,16 +111,27 @@ public class searchSteps extends AbstractSteps {
         boolean isShown = "exists".equals(maybe);
 
         if (isShown) {
-            assertThat(sikuli.doesExist(pattern)).isTrue();
-            assertThat(storedMatch.getScore()).isGreaterThan(0.9);
             
-            resetStoredMatch();
-            
+            setStoredMatch(screen.exists(pattern));
+            assertThat(storedMatch).isNotNull();
+
         } else {
+
             assertThat(sikuli.doesExist(pattern)).isFalse();
+
         }
-        
-        
+    }
+
+    /**
+     * WARNING: This step will reset the stored Match to avoid false positives in subsequent
+     * verification steps.
+     */
+    @Then("^the pattern matches with score (\\d+\\.\\d+)$")
+    public void the_pattern_matches_with_score(final double score) throws Throwable {
+
+        assertThat(storedMatch.getScore()).isGreaterThan(score);
+        resetStoredMatch();
+
     }
 
     /**
