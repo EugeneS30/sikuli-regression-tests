@@ -19,7 +19,7 @@ import cucumber.api.java.Before;
 public class Hook {
 
     @Autowired
-    private WebDriver webDriver;
+    private WebDriver driver;
 
     @Autowired
     private Screen screen;
@@ -27,14 +27,14 @@ public class Hook {
     @Before
     public void prepareTest() {
 
-        webDriver.manage().deleteAllCookies();
-//        webDriver.get("http://www.sikulix.com");
+        driver.get("about:blank");
+
     }
 
     @After
     public void finaliseTest() {
 
-        webDriver.get("about:blank");
+        driver.manage().deleteAllCookies();
 
     }
 
