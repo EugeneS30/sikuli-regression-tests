@@ -7,8 +7,12 @@ import javax.inject.Inject;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Match;
+import org.sikuli.script.ObserveEvent;
+import org.sikuli.script.ObserverCallBack;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
@@ -17,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.eugenes.functional.util.SikuliSupport;
+import com.google.common.base.Predicate;
 
 import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
@@ -36,6 +41,9 @@ public class searchSteps extends AbstractSteps {
 
     @Inject
     private SikuliSupport sikuli;
+    
+    @Inject
+    private FluentWait<WebDriver> wait;
 
     // If the pattern was found by one of the steps it will be stored in this
     // variable.
@@ -48,11 +56,18 @@ public class searchSteps extends AbstractSteps {
     @Setter
     private boolean observationOutcome;
 
-    @Value("${sikuli.observeTimeout.time:10}")
-    private float observeTimeout;
+    @Setter
+    private Region region;
+
+    @Value("${sikuli.observeTimeout.time:100}")
+    private int observeTimeout;
 
     @Value("${sikuli.waitTimeout.time:10}")
     private float waitTimeout;
+
+    // Threshold value in pixels
+    @Value("${sikuli.onChange.threshold:50}")
+    private float onChangeThreshold;
 
     @When("^I wait for pattern \"([^\"]*)\"$")
     public void i_wait_for_pattern(final String patternName) throws FindFailed {
@@ -66,58 +81,110 @@ public class searchSteps extends AbstractSteps {
 
     @When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
     public void i_observe_the_screen_for_pattern_to(final String pattern, final String eventType) throws Throwable {
+        log.info("Going to observer region for event: {}", eventType);
 
         log.info("Setting initial outcome to False");
         setObservationOutcome(false);
 
-        Region region = screen;
+        region = screen;
 
+        log.info("Checking event type");
         switch (ObserverEvent.fromString(eventType)) {
+
             case ON_APPEAR:
-                log.info("ON_APPEAR");
-                region.onAppear(pattern);
+                log.info("Evenet type: ON_APPEAR");
+
+                region.onAppear(pattern, new ObserverCallBack() {
+
+                    @Override
+                    public void appeared(ObserveEvent e) {
+                        log.info("Event fired! {}", e);
+                        log.info("Setting ObservationOutcome to True");
+                        setObservationOutcome(true);
+                        region.stopObserver("Stopping observation on this region");
+                    }
+                });
+
                 break;
 
             case ON_VANISH:
-                log.info("ON_VANISH");
-                region.onVanish(pattern);
+                log.info("Evenet type: ON_VANISH");
+
+                region.onVanish(pattern, new ObserverCallBack() {
+
+                    @Override
+                    public void vanished(ObserveEvent e) {
+                        log.info("Event fired! {}", e);
+                        log.info("Setting ObservationOutcome to True");
+                        setObservationOutcome(true);
+                        region.stopObserver("Stopping observation on this region");
+                    }
+                });
+
                 break;
 
             case ON_CHANGE:
-                log.info("ON_CHANGE");
-                region.onChange();
+                log.info("Evenet type: ON_CHANGE");
+
+                region.onChange(50, new ObserverCallBack() {
+
+                    @Override
+                    public void changed(ObserveEvent e) {
+                        log.info("Event fired! {}", e);
+                        log.info("Setting ObservationOutcome to True");
+                        setObservationOutcome(true);
+                        region.stopObserver("Stopping observation on this region");
+                    }
+                });
 
             default:
                 throw new PendingException("event type not supported: " + eventType);
         }
 
-        log.info("Starting the observation");
-        boolean outcome = region.observeInBackground(observeTimeout);
-        log.info("Observation completed with result: {}! Setting the outcome accordingly", outcome);
-        setObservationOutcome(outcome);
+        log.info("Starting the observation with timeout: {}", observeTimeout);
+        region.observeInBackground(observeTimeout);
 
     }
 
-    @Then("^the event fires$")
+    @Then("^the event have been fired$")
     public void the_onAppear_event_fires() throws Throwable {
+        
+        log.info("Verifying that the event has fired");
+                
+        wait.until(new Predicate<WebDriver>() {
+            
+            @Override
+            public boolean apply(WebDriver input) {
+                log.info("Current observation result: {}", observationOutcome);
+                
+                return observationOutcome;
 
-        assertThat(observationOutcome).isTrue();
+            }
+        });
 
     }
 
     @Given("^the pattern \"(.*?)\" (exists|does not exist) on the screen$")
     public void the_pattern_maybe_visible_on_the_screen(final String pattern, final String maybe) throws Throwable {
+        log.info("Checking pattern existence");
 
         boolean isShown = "exists".equals(maybe);
 
         if (isShown) {
-            
-            setStoredMatch(screen.exists(pattern));
+            log.info("Expecting pattern to exist on the screen");
+
+            resetStoredMatch();
+            setStoredMatch(screen.exists(pattern, waitTimeout));
             assertThat(storedMatch).isNotNull();
 
-        } else {
+            log.info("The pattern exists on the screen!");
 
+        } else {
+            log.info("Expecting pattern to not exist on the screen");
+
+            assertThat(screen.exists(pattern, 0)).isNull();
             assertThat(sikuli.doesExist(pattern)).isFalse();
+            log.info("The pattern does not exist on the screen!");
 
         }
     }
