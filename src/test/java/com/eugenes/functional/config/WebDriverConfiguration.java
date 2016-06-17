@@ -7,16 +7,23 @@ import javax.inject.Inject;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.Point;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriver.Window;
 import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.FluentWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -87,11 +94,18 @@ public class WebDriverConfiguration {
     @Value("${driver.remote.capability.browser:firefox}")
     private String browser;
 
-    // @Bean
-    // public WaitConfiguration waitConfig() {
-    // return
-    // WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
-    // }
+//    @Bean
+//    public WaitConfiguration waitConfig() {
+//        return WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
+//    }
+
+    @Bean
+    @Primary
+    public FluentWait<WebDriver> fluentWait() {
+        
+        return new FluentWait<WebDriver>(webDriver).pollingEvery(pollingEveryTime, pollingEveryUnit)
+                .withTimeout(withTimeoutTime, withTimeoutUnit).ignoring(NoSuchElementException.class, StaleElementReferenceException.class);
+    }
 
     @Slf4j
     @Configuration
@@ -114,7 +128,6 @@ public class WebDriverConfiguration {
 
             boolean useProxy = !"none".equals(proxyHost);
 
-            // Configure proxy if required
             if (useProxy) {
 
                 profile.setPreference("network.proxy.type", 1);
@@ -131,6 +144,28 @@ public class WebDriverConfiguration {
 
     }
 
+    @Slf4j
+    @Profile({"chrome"})
+    public static class LocalChromeDriverConfiguration {
+
+        @Value("${http.proxy.host:none}")
+        private String proxyHost;
+
+        @Value("${http.proxy.port:8080}")
+        private int proxyPort;
+
+        @Bean(destroyMethod = "quit")
+        public ChromeDriver chromeDriver() {
+
+            Capabilities capabilities = new DesiredCapabilities();
+
+            log.info("Creating chromeDriver bean");
+
+            return new ChromeDriver(capabilities);
+        }
+
+    }
+
     @PostConstruct
     public void setWebDriverTimeouts() {
 
@@ -139,7 +174,7 @@ public class WebDriverConfiguration {
         try {
             webDriver.manage().timeouts().pageLoadTimeout(pageLoadTimeoutTime, pageLoadTimeoutUnit);
         } catch (WebDriverException e) {
-            
+
         }
 
     }
