@@ -67,7 +67,7 @@ public class searchSteps extends AbstractSteps {
 
     // Threshold value in pixels
     @Value("${sikuli.onChange.threshold:50}")
-    private float onChangeThreshold;
+    private int onChangeThreshold;
 
     @When("^I wait for pattern \"([^\"]*)\"$")
     public void i_wait_for_pattern(final String patternName) throws FindFailed {
@@ -81,7 +81,7 @@ public class searchSteps extends AbstractSteps {
 
     @When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
     public void i_observe_the_screen_for_pattern_to(final String pattern, final String eventType) throws Throwable {
-        log.info("Going to observer region for event: {}", eventType);
+        log.info("Setting up region to observe for event: {}", eventType);
 
         log.info("Setting initial outcome to False");
         setObservationOutcome(false);
@@ -92,9 +92,9 @@ public class searchSteps extends AbstractSteps {
         switch (ObserverEvent.fromString(eventType)) {
 
             case ON_APPEAR:
-                log.info("Evenet type: ON_APPEAR");
-                log.info("Assigning event to the area");
+                log.info("Detected event type --> {}", eventType);
 
+                log.info("Registering callback");
                 region.onAppear(pattern, new ObserverCallBack() {
 
                     @Override
@@ -106,8 +106,9 @@ public class searchSteps extends AbstractSteps {
                 break;
 
             case ON_VANISH:
-                log.info("Evenet type: ON_VANISH");
+                log.info("Detected event type --> {}", eventType);
 
+                log.info("Registering callback");
                 region.onVanish(pattern, new ObserverCallBack() {
 
                     @Override
@@ -119,9 +120,10 @@ public class searchSteps extends AbstractSteps {
                 break;
 
             case ON_CHANGE:
-                log.info("Evenet type: ON_CHANGE");
+                log.info("Detected event type --> {}", eventType);
 
-                region.onChange(50, new ObserverCallBack() {
+                log.info("Registering callback");
+                region.onChange(onChangeThreshold, new ObserverCallBack() {
 
                     @Override
                     public void changed(ObserveEvent e) {
@@ -204,13 +206,13 @@ public class searchSteps extends AbstractSteps {
     }
 
     private void eventFired(ObserveEvent event) {
-        
+
         log.info("EVENT FIRED --> {}", event);
         log.info("Setting ObservationOutcome to True");
         setObservationOutcome(true);
         log.info("Stopping observation for event --> {}", event);
         region.stopObserver("Stopping observation on this region");
-        
+
         assertThat(region.isObserving()).isFalse();
 
     }
