@@ -41,7 +41,7 @@ public class searchSteps extends AbstractSteps {
 
     @Inject
     private SikuliSupport sikuli;
-    
+
     @Inject
     private FluentWait<WebDriver> wait;
 
@@ -93,15 +93,13 @@ public class searchSteps extends AbstractSteps {
 
             case ON_APPEAR:
                 log.info("Evenet type: ON_APPEAR");
+                log.info("Assigning event to the area");
 
                 region.onAppear(pattern, new ObserverCallBack() {
 
                     @Override
                     public void appeared(ObserveEvent e) {
-                        log.info("Event fired! {}", e);
-                        log.info("Setting ObservationOutcome to True");
-                        setObservationOutcome(true);
-                        region.stopObserver("Stopping observation on this region");
+                        eventFired(e);
                     }
                 });
 
@@ -114,10 +112,7 @@ public class searchSteps extends AbstractSteps {
 
                     @Override
                     public void vanished(ObserveEvent e) {
-                        log.info("Event fired! {}", e);
-                        log.info("Setting ObservationOutcome to True");
-                        setObservationOutcome(true);
-                        region.stopObserver("Stopping observation on this region");
+                        eventFired(e);
                     }
                 });
 
@@ -130,10 +125,7 @@ public class searchSteps extends AbstractSteps {
 
                     @Override
                     public void changed(ObserveEvent e) {
-                        log.info("Event fired! {}", e);
-                        log.info("Setting ObservationOutcome to True");
-                        setObservationOutcome(true);
-                        region.stopObserver("Stopping observation on this region");
+                        eventFired(e);
                     }
                 });
 
@@ -148,15 +140,15 @@ public class searchSteps extends AbstractSteps {
 
     @Then("^the event have been fired$")
     public void the_onAppear_event_fires() throws Throwable {
-        
+
         log.info("Verifying that the event has fired");
-                
+
         wait.until(new Predicate<WebDriver>() {
-            
+
             @Override
             public boolean apply(WebDriver input) {
                 log.info("Current observation result: {}", observationOutcome);
-                
+
                 return observationOutcome;
 
             }
@@ -208,6 +200,18 @@ public class searchSteps extends AbstractSteps {
     private void resetStoredMatch() {
         log.debug("Resetting stored Match object to null.");
         setStoredMatch(null);
+
+    }
+
+    private void eventFired(ObserveEvent event) {
+        
+        log.info("EVENT FIRED --> {}", event);
+        log.info("Setting ObservationOutcome to True");
+        setObservationOutcome(true);
+        log.info("Stopping observation for event --> {}", event);
+        region.stopObserver("Stopping observation on this region");
+        
+        assertThat(region.isObserving()).isFalse();
 
     }
 
