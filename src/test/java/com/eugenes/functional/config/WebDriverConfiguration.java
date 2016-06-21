@@ -32,7 +32,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
  * @author eugene.shragovich
  */
 
-@ComponentScan
+@ComponentScan(basePackages = {"com.eugenes.functional"})
 @Configuration
 @PropertySource({"classpath:feature.properties", "classpath:feature-ext.properties"})
 public class WebDriverConfiguration {
