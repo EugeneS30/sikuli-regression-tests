@@ -145,22 +145,10 @@
 		</dependency>
 
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.19.1</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>integration-test</goal>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/EugeneS30/sikuli-regression-tests/issues</url>
+	</issueManagement>
+	<name>Sikuli functional testing framework</name>
 </project>
