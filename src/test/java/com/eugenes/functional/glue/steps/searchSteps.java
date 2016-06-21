@@ -86,7 +86,10 @@ public class searchSteps extends AbstractSteps {
         log.info("Setting initial outcome to False");
         setObservationOutcome(false);
 
-        region = screen;
+        // new Screen instance is required for each observation since stopping an observer
+        // deactivates ALL running observations and starting an observer activates ALL registered
+        // events for the observed region
+        region = new Screen();
 
         log.info("Checking event type");
         switch (ObserverEvent.fromString(eventType)) {

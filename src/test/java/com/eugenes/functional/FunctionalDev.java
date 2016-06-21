@@ -12,9 +12,9 @@ import cucumber.api.junit.Cucumber;
  */
 
 @RunWith(Cucumber.class)
-@CucumberOptions(dryRun = true, features = {"classpath:sikuli_features"}, format = {"json:target/cucumber-dev/cucumber.json", "pretty"})
+@CucumberOptions(features = {"classpath:sikuli_features"}, format = {"json:target/cucumber-dev/cucumber.json", "pretty"}, tags = {"@wip"})
 
-public class FunctionalDryRunIT
+public class FunctionalDev
 {
 
 }
