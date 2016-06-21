@@ -2,8 +2,9 @@ package com.eugenes.functional.util;
 
 import javax.inject.Inject;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.sikuli.script.Screen;
-import org.springframework.stereotype.Component;
 
 /**
  * Facade over Sikuli to abstract interaction with the screen
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  *
  */
 
+@Slf4j
 public class SikuliSupport {
 
     @Inject
