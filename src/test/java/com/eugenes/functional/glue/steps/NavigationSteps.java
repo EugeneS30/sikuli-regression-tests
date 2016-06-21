@@ -18,8 +18,12 @@ public class NavigationSteps extends AbstractSteps {
     @When("^I navigate to \"(.*?)\"$")
     @Given("^I have navigated to \"(.*?)\"$")
     public void i_have_navigated_to(String url) throws Throwable {
+        
+        if (!driver.getCurrentUrl().equals(url)) {
+            driver.get(url);
+        }
 
-        driver.get(url);
+        
 
     }
 
