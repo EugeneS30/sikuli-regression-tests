@@ -34,7 +34,7 @@ import cucumber.api.java.en.When;
 
 @Slf4j
 @Component
-public class searchSteps extends AbstractSteps {
+public class PatternSearchSteps extends AbstractSteps {
 
     @Autowired
     private Screen screen;
