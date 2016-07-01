@@ -1,7 +1,12 @@
-@Search @Core
-Feature: Search
+@Region
+Feature: Region Manipulation
 
-  Scenario: Region.observe() fires on onAppear() event
+  Scenario: Region matches pattern file
+    Given I have navigated to "http://sikulix.weebly.com/"
+    When the pattern "QuickStartPlain.png" exists on the screen
+    Then the "QuickStartPlain.png" pattern dimensions match the created Region 
+  
+  
     Given the pattern "QuickStartPlain.png" does not exist on the screen
     When I observe the screen for pattern "QuickStartPlain.png" to "appear" 
     And I am navigating to "http://sikulix.weebly.com/"

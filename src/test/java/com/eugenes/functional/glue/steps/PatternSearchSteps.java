@@ -2,6 +2,11 @@ package com.eugenes.functional.glue.steps;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
 import lombok.Setter;
@@ -196,6 +201,17 @@ public class PatternSearchSteps extends AbstractSteps {
         assertThat(storedMatch.getScore()).isGreaterThan(score);
         resetStoredMatch();
 
+    }
+    
+    @Then("^the \"(.*?)\" pattern dimensions match the created Region$")
+    public void pattern_dimensions_match_the_created_Region(final String patternFile) throws IOException {
+    	
+    	String imagePath = System.getProperty("user.dir") + "\\src\\test\\resources\\patterns\\" + patternFile;
+    	BufferedImage image = ImageIO.read(new File(imagePath));
+    	
+    	assertThat(image.getHeight()).isEqualTo(storedMatch.getH());
+    	assertThat(image.getWidth()).isEqualTo(storedMatch.getW());
+    	
     }
 
     /**

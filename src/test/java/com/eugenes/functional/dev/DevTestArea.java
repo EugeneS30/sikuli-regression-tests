@@ -1,11 +1,19 @@
 package com.eugenes.functional.dev;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
 
+import lombok.extern.slf4j.Slf4j;
+
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.sikuli.basics.Settings;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.ImagePath;
@@ -13,34 +21,45 @@ import org.sikuli.script.Match;
 import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
 
+@Slf4j
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DevTestArea {
 
+	String imagePath = System.getProperty("user.dir") + "\\src\\test\\resources\\patterns\\GetWin10SysBar.png";
+	File image = new File(imagePath);
+	Screen s = new Screen();
+
+	@Before
+	public void setUp() {
+		ImagePath.setBundlePath(image.getParent());
+	}
+	
 	@Test
-	public void imageRead() {
-		BufferedImage bimg = ImageIO.read(new File(System.getProperty("user.dir")
-				+ "\\src\\test\\resources\\patterns"));
-		int width = bimg.getWidth();
-		int height = bimg.getHeight();
+	public void TestA() throws IOException {
+		
+		BufferedImage bimg = ImageIO.read(image);
+
+		log.info("Actual image width: {}", bimg.getWidth());
+		log.info("Actual image height: {}", bimg.getHeight());
 	}
 
-	@Test
-	public void regionTest() throws FindFailed {
-
-		ImagePath.setBundlePath(System.getProperty("user.dir")
-				+ "\\src\\test\\resources\\patterns");
-
-		Screen s = new Screen();
+	@Test()
+	public void TestB() throws FindFailed {
 
 		Region r = s.find("GetWin10SysBar.png");
 
-		r.above().highlight(1);
-		r.below().highlight(1);
-		r.above(50).highlight(1);
+		log.info("Detected image width: {}", r.getW());
+		log.info("Detected image height: {}", r.getH());
 
-		r.highlight(1);
+//		r.above().highlight(1);
+//		r.below().highlight(1);
+//		r.above(50).highlight(1);
+//
+//		r.highlight(1);
 
 	}
 
+	@Ignore
 	@Test
 	public void highlightTest() throws FindFailed {
 

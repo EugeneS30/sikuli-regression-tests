@@ -4,6 +4,8 @@ import java.io.File;
 
 import javax.annotation.PostConstruct;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.sikuli.basics.Settings;
 import org.sikuli.script.IScreen;
 import org.sikuli.script.ImagePath;
@@ -20,6 +22,7 @@ import com.eugenes.functional.util.SikuliSupport;
  * @author eugene.shragovich
  */
 
+@Slf4j
 @Configuration
 public class SikuliConfiguration {
 
@@ -37,7 +40,7 @@ public class SikuliConfiguration {
 
     @PostConstruct
     public void setSikuliSettings() {
-        Settings.AutoWaitTimeout = autoWaitTimeout;
+    	Settings.AutoWaitTimeout = autoWaitTimeout;
         // ImagePath.setBundlePath("C:/workspace/sikuli-regression-tests/src/test/resources/patterns/");
         ImagePath.setBundlePath(new File(RunTime.get().fSxProject, "target/test-classes/patterns/").getAbsolutePath());
     }
