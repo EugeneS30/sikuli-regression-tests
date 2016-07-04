@@ -1,7 +1,7 @@
 # sikuli-regression-tests
 Public Sikuli API Regression test pack
 
-**still experimental**
+**still experimental and under developement - may change without any notice**
 
 Usage:
 - have a valid Maven 3 install
