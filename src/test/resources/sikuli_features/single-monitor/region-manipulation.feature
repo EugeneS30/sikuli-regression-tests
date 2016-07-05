@@ -10,5 +10,5 @@ Feature: Region Manipulation
   Scenario: Expand Region upwards
     Given I have navigated to "http://sikulix.weebly.com/"
     When the pattern "QuickStartPlain.png" exists on the screen
-    And I expand the Region upward
+    And I expand the Region "up"
     Then the resulting Region is above the original Region not including it   
