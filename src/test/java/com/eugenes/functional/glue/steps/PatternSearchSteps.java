@@ -9,9 +9,11 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.sikuli.script.FindFailed;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.eugenes.functional.data.RegionExpandDirection;
 import com.eugenes.functional.util.SikuliSupport;
 import com.google.common.base.Predicate;
 
@@ -41,199 +44,263 @@ import cucumber.api.java.en.When;
 @Component
 public class PatternSearchSteps extends AbstractSteps {
 
-    @Autowired
-    private Screen screen;
+	@Autowired
+	private Screen screen;
 
-    @Inject
-    private SikuliSupport sikuli;
+	@Inject
+	private SikuliSupport sikuli;
 
-    @Inject
-    private FluentWait<WebDriver> wait;
+	@Inject
+	private FluentWait<WebDriver> wait;
 
-    // If the pattern was found by one of the steps it will be stored in this
-    // variable.
-    @Setter
-    private Match storedMatch;
+	// If the pattern was found by one of the steps it will be stored in this
+	// variable.
+	@Setter
+	private Match storedMatch;
 
-    @Setter
-    private Pattern storedPattern;
+	@Setter
+	private Pattern storedPattern;
 
-    @Setter
-    private boolean observationOutcome;
+	@Setter
+	private boolean observationOutcome;
 
-    @Setter
-    private Region region;
+	@Setter
+	@Getter
+	private Region region;
 
-    @Value("${sikuli.observeTimeout.time:100}")
-    private int observeTimeout;
+	@Setter
+	@Getter
+	private Region relativeRegion;
 
-    @Value("${sikuli.waitTimeout.time:10}")
-    private float waitTimeout;
+	@Value("${sikuli.observeTimeout.time:100}")
+	private int observeTimeout;
 
-    // Threshold value in pixels
-    @Value("${sikuli.onChange.threshold:50}")
-    private int onChangeThreshold;
+	@Value("${sikuli.waitTimeout.time:10}")
+	private float waitTimeout;
 
-    @When("^I wait for pattern \"([^\"]*)\"$")
-    public void i_wait_for_pattern(final String patternName) throws FindFailed {
+	// Threshold value in pixels
+	@Value("${sikuli.onChange.threshold:50}")
+	private int onChangeThreshold;
 
-        log.info("Waiting for pattern: " + patternName + ". . .");
+	@When("^I wait for pattern \"([^\"]*)\"$")
+	public void i_wait_for_pattern(final String patternName) throws FindFailed {
 
-        setStoredPattern(new Pattern(patternName));
-        setStoredMatch(screen.wait(patternName, waitTimeout));
+		log.info("Waiting for pattern: " + patternName + ". . .");
 
-    }
+		// setStoredPattern(new Pattern(patternName));
+		setStoredMatch(screen.wait(patternName, waitTimeout));
 
-    @When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
-    public void i_observe_the_screen_for_pattern_to(final String pattern, final String eventType) throws Throwable {
-        log.info("Setting up region to observe for event: {}", eventType);
+	}
+	
+	@When("^I expand the Region UPWARDS|DOWNWARDS|LEFT|RIGHT$")
+	public void i_expand_the_region(final String direction) {
 
-        log.info("Setting initial outcome to False");
-        setObservationOutcome(false);
+		switch (RegionExpandDirection.fromString(direction)) {
 
-        // new Screen instance is required for each observation since stopping an observer
-        // deactivates ALL running observations and starting an observer activates ALL registered
-        // events for the observed region 
-        region = new Screen();
+		case UPWARDS:
+			log.info("up");
 
-        log.info("Checking event type");
-        switch (ObserverEvent.fromString(eventType)) {
+			break;
+			
+		case DOWNWARDS:
+			log.info("down");
+			
+			break;
+	
+		case LEFT:
+			log.info("left");
+			break;
+			
+		case RIGHT:
+			log.info("right");
+			break;
+			
+		default:
+			throw new NoSuchElementException("sdsd");
+		}
 
-            case ON_APPEAR:
-                log.info("Detected event type --> {}", eventType);
+	}
 
-                log.info("Registering callback");
-                region.onAppear(pattern, new ObserverCallBack() {
 
-                    @Override
-                    public void appeared(ObserveEvent e) {
-                        eventFired(e);
-                    }
-                });
+	@When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
+	public void i_observe_the_screen_for_pattern_to(final String pattern,
+			final String eventType) throws Throwable {
+		log.info("Setting up region to observe for event: {}", eventType);
 
-                break;
+		log.info("Setting initial outcome to False");
+		setObservationOutcome(false);
 
-            case ON_VANISH:
-                log.info("Detected event type --> {}", eventType);
+		// new Screen instance is required for each observation since stopping
+		// an observer
+		// deactivates ALL running observations and starting an observer
+		// activates ALL registered
+		// events for the observed region
+		region = new Screen();
 
-                log.info("Registering callback");
-                region.onVanish(pattern, new ObserverCallBack() {
+		log.info("Checking event type");
+		switch (ObserverEvent.fromString(eventType)) {
 
-                    @Override
-                    public void vanished(ObserveEvent e) {
-                        eventFired(e);
-                    }
-                });
+		case ON_APPEAR:
+			log.info("Detected event type --> {}", eventType);
 
-                break;
+			log.info("Registering callback");
+			region.onAppear(pattern, new ObserverCallBack() {
 
-            case ON_CHANGE:
-                log.info("Detected event type --> {}", eventType);
+				@Override
+				public void appeared(ObserveEvent e) {
+					eventFired(e);
+				}
+			});
 
-                log.info("Registering callback");
-                region.onChange(onChangeThreshold, new ObserverCallBack() {
+			break;
 
-                    @Override
-                    public void changed(ObserveEvent e) {
-                        eventFired(e);
-                    }
-                });
+		case ON_VANISH:
+			log.info("Detected event type --> {}", eventType);
 
-            default:
-                throw new PendingException("event type not supported: " + eventType);
-        }
+			log.info("Registering callback");
+			region.onVanish(pattern, new ObserverCallBack() {
 
-        log.info("Starting the observation with timeout: {}", observeTimeout);
-        region.observeInBackground(observeTimeout);
+				@Override
+				public void vanished(ObserveEvent e) {
+					eventFired(e);
+				}
+			});
 
-    }
+			break;
 
-    @Then("^the event have been fired$")
-    public void the_onAppear_event_fires() throws Throwable {
+		case ON_CHANGE:
+			log.info("Detected event type --> {}", eventType);
 
-        log.info("Verifying that the event has fired");
+			log.info("Registering callback");
+			region.onChange(onChangeThreshold, new ObserverCallBack() {
 
-        wait.until(new Predicate<WebDriver>() {
+				@Override
+				public void changed(ObserveEvent e) {
+					eventFired(e);
+				}
+			});
 
-            @Override
-            public boolean apply(WebDriver input) {
-                log.info("Current observation result: {}", observationOutcome);
+		default:
+			throw new PendingException("event type not supported: " + eventType);
+		}
 
-                return observationOutcome;
+		log.info("Starting the observation with timeout: {}", observeTimeout);
+		region.observeInBackground(observeTimeout);
 
-            }
-        });
+	}
 
-    }
+	@Then("^the event have been fired$")
+	public void the_onAppear_event_fires() throws Throwable {
 
-    @Given("^the pattern \"(.*?)\" (exists|does not exist) on the screen$")
-    public void the_pattern_maybe_visible_on_the_screen(final String pattern, final String maybe) throws Throwable {
-        log.info("Checking pattern existence");
+		log.info("Verifying that the event has fired");
 
-        boolean isShown = "exists".equals(maybe);
+		wait.until(new Predicate<WebDriver>() {
 
-        if (isShown) {
-            log.info("Expecting pattern to exist on the screen");
+			@Override
+			public boolean apply(WebDriver input) {
+				log.info("Current observation result: {}", observationOutcome);
 
-            resetStoredMatch();
-            setStoredMatch(screen.exists(pattern, waitTimeout));
-            assertThat(storedMatch).isNotNull();
+				return observationOutcome;
 
-            log.info("The pattern exists on the screen!");
+			}
+		});
 
-        } else {
-            log.info("Expecting pattern to not exist on the screen");
+	}
 
-            assertThat(screen.exists(pattern, 0)).isNull();
-            assertThat(sikuli.doesExist(pattern)).isFalse();
-            log.info("The pattern does not exist on the screen!");
+	@Given("^the pattern \"(.*?)\" (exists|does not exist) on the screen$")
+	public void the_pattern_maybe_visible_on_the_screen(final String pattern,
+			final String maybe) throws Throwable {
+		log.info("Checking pattern existence");
 
-        }
-    }
+		boolean isShown = "exists".equals(maybe);
 
-    /**
-     * WARNING: This step will reset the stored Match to avoid false positives in subsequent
-     * verification steps.
-     */
-    @Then("^the pattern matches with score (\\d+\\.\\d+)$")
-    public void the_pattern_matches_with_score(final double score) throws Throwable {
+		if (isShown) {
+			log.info("Expecting pattern to exist on the screen");
 
-        assertThat(storedMatch.getScore()).isGreaterThan(score);
-        resetStoredMatch();
+			// resetStoredMatch();
+			setStoredMatch(screen.exists(pattern, waitTimeout));
+			assertThat(storedMatch).isNotNull();
 
-    }
-    
-    @Then("^the \"(.*?)\" pattern dimensions match the created Region$")
-    public void pattern_dimensions_match_the_created_Region(final String patternFile) throws IOException {
-    	
-    	String imagePath = System.getProperty("user.dir") + "\\src\\test\\resources\\patterns\\" + patternFile;
-    	BufferedImage image = ImageIO.read(new File(imagePath));
-    	
-    	assertThat(image.getHeight()).isEqualTo(storedMatch.getH());
-    	assertThat(image.getWidth()).isEqualTo(storedMatch.getW());
-    	
-    }
+			log.info("The pattern exists on the screen!");
 
-    /**
-     * This method must be used after each verification so that it a subsequent tests will not be
-     * affected by past results.
-     */
-    private void resetStoredMatch() {
-        log.debug("Resetting stored Match object to null.");
-        setStoredMatch(null);
+		} else {
+			log.info("Expecting pattern to not exist on the screen");
 
-    }
+			assertThat(screen.exists(pattern, 0)).isNull();
+			assertThat(sikuli.doesExist(pattern)).isFalse();
+			log.info("The pattern does not exist on the screen!");
 
-    private void eventFired(ObserveEvent event) {
+		}
+	}
 
-        log.info("EVENT FIRED --> {}", event);
-        log.info("Setting ObservationOutcome to True");
-        setObservationOutcome(true);
-        log.info("Stopping observation for event --> {}", event);
-        region.stopObserver("Stopping observation on this region");
+	/**
+	 * WARNING: This step will reset the stored Match to avoid false positives
+	 * in subsequent verification steps.
+	 */
+	@Then("^the pattern matches with score (\\d+\\.\\d+)$")
+	public void the_pattern_matches_with_score(final double score)
+			throws Throwable {
 
-        assertThat(region.isObserving()).isFalse();
+		assertThat(storedMatch.getScore()).isGreaterThan(score);
+		resetStoredMatch();
 
-    }
+	}
+
+	@Then("^the \"(.*?)\" pattern dimensions match the created Region$")
+	public void pattern_dimensions_match_the_created_Region(
+			final String patternFile) throws IOException {
+
+		String imagePath = System.getProperty("user.dir")
+				+ "\\src\\test\\resources\\patterns\\" + patternFile;
+		BufferedImage image = ImageIO.read(new File(imagePath));
+
+		assertThat(image.getHeight()).isEqualTo(storedMatch.getH());
+		assertThat(image.getWidth()).isEqualTo(storedMatch.getW());
+
+	}
+
+	@Then("^the resulting Region is \"(.*?)\" the original Region not including it$")
+	public void resulting_region_in_relation_to_original_region(
+			final String relativePosition, final String doeInclude) {
+
+	}
+
+	@When("^I reset the stored match$")
+	public void i_reset_stored_match() {
+
+		try {
+			setStoredMatch(null);
+		} catch (Exception e) {
+			log.error("Stored Match was NOT reset!");
+		}
+
+	}
+
+	@When("^I print a stored match$")
+	public void i_print_a_stored_match() {
+		System.out.println(storedMatch);
+	}
+
+	/**
+	 * This method must be used after each verification so that it a subsequent
+	 * tests will not be affected by past results.
+	 */
+	private void resetStoredMatch() {
+		log.debug("Resetting stored Match object to null.");
+		setStoredMatch(null);
+
+	}
+
+	private void eventFired(ObserveEvent event) {
+
+		log.info("EVENT FIRED --> {}", event);
+		log.info("Setting ObservationOutcome to True");
+		setObservationOutcome(true);
+		log.info("Stopping observation for event --> {}", event);
+		region.stopObserver("Stopping observation on this region");
+
+		assertThat(region.isObserving()).isFalse();
+
+	}
 
 }
