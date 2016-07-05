@@ -92,27 +92,35 @@ public class PatternSearchSteps extends AbstractSteps {
 
 	}
 	
-	@When("^I expand the Region UPWARDS|DOWNWARDS|LEFT|RIGHT$")
+	@When("^I expand the Region \"(.*?)\"$")
 	public void i_expand_the_region(final String direction) {
+		
+		assertThat(region).isNotNull();
 
 		switch (RegionExpandDirection.fromString(direction)) {
 
 		case UPWARDS:
 			log.info("up");
+			setRelativeRegion(region.above());
+			relativeRegion.highlight(1);
 
 			break;
 			
 		case DOWNWARDS:
 			log.info("down");
+			setRelativeRegion(region.below());
 			
 			break;
 	
 		case LEFT:
 			log.info("left");
+			setRelativeRegion(region.left());
+			
 			break;
 			
 		case RIGHT:
 			log.info("right");
+			setRelativeRegion(region.right());
 			break;
 			
 		default:
