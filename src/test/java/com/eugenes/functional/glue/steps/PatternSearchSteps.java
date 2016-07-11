@@ -91,10 +91,10 @@ public class PatternSearchSteps extends AbstractSteps {
 		setStoredMatch(screen.wait(patternName, waitTimeout));
 
 	}
-	
+
 	@When("^I expand the Region \"(.*?)\"$")
 	public void i_expand_the_region(final String direction) {
-		
+
 		assertThat(region).isNotNull();
 
 		switch (RegionExpandDirection.fromString(direction)) {
@@ -105,30 +105,38 @@ public class PatternSearchSteps extends AbstractSteps {
 			relativeRegion.highlight(1);
 
 			break;
-			
+
 		case DOWNWARDS:
 			log.info("down");
 			setRelativeRegion(region.below());
-			
+
 			break;
-	
+
 		case LEFT:
 			log.info("left");
 			setRelativeRegion(region.left());
-			
+
 			break;
-			
+
 		case RIGHT:
 			log.info("right");
 			setRelativeRegion(region.right());
 			break;
-			
+
 		default:
 			throw new NoSuchElementException("sdsd");
 		}
 
 	}
-
+	
+	@Then("^the resulting Region is \"(.*?)\" the original Region (including|not including) it$")
+	public void resulting_Region_is_relative_to_the_original_Region(final String relation, final String maybe) {
+		
+		boolean including = "including".equals(maybe);
+		
+		//TODO
+//		region.getTopLeft()
+	}
 
 	@When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
 	public void i_observe_the_screen_for_pattern_to(final String pattern,
@@ -214,10 +222,17 @@ public class PatternSearchSteps extends AbstractSteps {
 		});
 
 	}
+	
+	@Given("^I define the pattern \"(.*?)\" as the Region$")
+	public void i_define_pattern_as_region(final String pattern) throws FindFailed {
+		
+		setRegion(screen.find(pattern));
+			
+	}
 
 	@Given("^the pattern \"(.*?)\" (exists|does not exist) on the screen$")
-	public void the_pattern_maybe_visible_on_the_screen(final String pattern,
-			final String maybe) throws Throwable {
+	public void the_pattern_maybe_visible_on_the_screen(final String pattern, final String maybe) throws Throwable {
+		
 		log.info("Checking pattern existence");
 
 		boolean isShown = "exists".equals(maybe);
