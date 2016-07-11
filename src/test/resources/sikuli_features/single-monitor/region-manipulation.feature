@@ -7,8 +7,16 @@ Feature: Region Manipulation
     Then the "QuickStartPlain.png" pattern dimensions match the created Region 
   
   @wip
-  Scenario: Expand Region upwards
+  Scenario Outline: Expand Region <direction>
     Given I have navigated to "http://sikulix.weebly.com/"
     When the pattern "QuickStartPlain.png" exists on the screen
-    And I expand the Region "up"
-    Then the resulting Region is above the original Region not including it   
+    And I define the pattern "QuickStartPlain.png" as the Region
+    And I expand the Region "<up>"
+    Then the resulting Region is "<result>" the original Region not including it
+    
+    Examples:
+    | direction | result |
+    | upwards   | above  |
+    | downwards | below  |
+    | right     | right  |
+    | left      | left   |
