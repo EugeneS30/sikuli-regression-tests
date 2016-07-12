@@ -2,6 +2,7 @@ package com.eugenes.functional.glue.steps;
 
 import static org.fest.assertions.Assertions.assertThat;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,10 +14,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.sikuli.script.FindFailed;
+import org.sikuli.script.Location;
 import org.sikuli.script.Match;
 import org.sikuli.script.ObserveEvent;
 import org.sikuli.script.ObserverCallBack;
@@ -134,9 +137,52 @@ public class PatternSearchSteps extends AbstractSteps {
 		
 		boolean including = "including".equals(maybe);
 		
-		//TODO
-//		region.getTopLeft()
+		Rectangle originalRegionRect = region.getRect();
+		Rectangle relativeRegionRect = relativeRegion.getRect();
+		
+				
+		if ("above".equals(relation)) {
+			
+			assertThat(relativeRegionRect.getMinY()).isEqualTo(0);
+			assertThat(relativeRegionRect.getMaxY()).isEqualTo(originalRegionRect.getMinY());
+			assertThat(originalRegionRect.getMinX()).isEqualTo(relativeRegionRect.getMinX());
+			assertThat(originalRegionRect.getMaxX()).isEqualTo(relativeRegionRect.getMaxX());
+			
+		} else if ("below".equals(relation)) {
+			
+			assertThat(relativeRegionRect.getMaxY()).isEqualTo(screen.getH());
+			assertThat(relativeRegionRect.getMinY()).isEqualTo(originalRegionRect.getMaxY());
+			assertThat(originalRegionRect.getMinX()).isEqualTo(relativeRegionRect.getMinX());
+			assertThat(originalRegionRect.getMaxX()).isEqualTo(relativeRegionRect.getMaxX());
+			
+		} else if ("right".equals(relation)) {
+			
+			assertThat(relativeRegionRect.getMaxX()).isEqualTo(screen.getW());
+			assertThat(originalRegionRect.getMaxX()).isEqualTo(relativeRegionRect.getMinX());
+			assertThat(relativeRegionRect.getMinY()).isEqualTo(originalRegionRect.getMinY());
+			assertThat(relativeRegionRect.getMaxY()).isEqualTo(originalRegionRect.getMaxY());
+			
+		} else if ("left".equals(relation)) {
+			
+			assertThat(relativeRegionRect.getMinX()).isEqualTo(0);
+			assertThat(originalRegionRect.getMinX()).isEqualTo(relativeRegionRect.getMaxX());
+			assertThat(relativeRegionRect.getMinY()).isEqualTo(originalRegionRect.getMinY());
+			assertThat(relativeRegionRect.getMaxY()).isEqualTo(originalRegionRect.getMaxY());
+			
+		} else {
+			
+			throw new UnsupportedOperationException("Relative direction not supported");
+			
+		}
+		
+
 	}
+	
+//	@Then("^the resulting Region is \"(.*?)\" the original Region not including it$")
+//	public void resulting_region_in_relation_to_original_region(
+//			final String relativePosition, final String doeInclude) {
+//
+//	}
 
 	@When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
 	public void i_observe_the_screen_for_pattern_to(final String pattern,
@@ -279,12 +325,6 @@ public class PatternSearchSteps extends AbstractSteps {
 
 		assertThat(image.getHeight()).isEqualTo(storedMatch.getH());
 		assertThat(image.getWidth()).isEqualTo(storedMatch.getW());
-
-	}
-
-	@Then("^the resulting Region is \"(.*?)\" the original Region not including it$")
-	public void resulting_region_in_relation_to_original_region(
-			final String relativePosition, final String doeInclude) {
 
 	}
 
