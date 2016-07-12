@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.eugenes.functional.config.SikuliConfiguration;
 import com.eugenes.functional.config.WebDriverConfiguration;
+import com.eugenes.functional.glue.steps.PatternSearchSteps;
 
 /**
  *
@@ -36,17 +37,19 @@ import com.eugenes.functional.config.WebDriverConfiguration;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles(profiles = { "local" })
-@ContextConfiguration(classes = { WebDriverConfiguration.class,
-		SikuliConfiguration.class })
+@ContextConfiguration(classes = { WebDriverConfiguration.class, SikuliConfiguration.class })
 @SuppressWarnings("unused")
 @Slf4j
-public class DevelopScenarioIT {
+public class DevelopScenario {
 	
 	@Inject
 	private Screen screen;
 	
 	@Inject
 	private WebDriver driver;
+	
+	@Inject
+	private PatternSearchSteps patternSearchSteps;
 
 	@BeforeClass
 	public static void configureBrowser() {
@@ -60,7 +63,13 @@ public class DevelopScenarioIT {
 		Region region = screen;
 		Match m = screen.find("GetWin10SysBar.png");
 		m.highlight(1);
-		
+	}
+	
+	@Test
+	public void regionManipulation() throws Throwable {
+		driver.get("http://sikulix.weebly.com/");
+		patternSearchSteps.the_pattern_maybe_visible_on_the_screen("QuickStartPlain.png", "exists");
+		patternSearchSteps.i_expand_the_region("up");
 	}
 
 }

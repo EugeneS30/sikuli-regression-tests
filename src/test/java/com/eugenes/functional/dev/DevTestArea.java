@@ -35,6 +35,16 @@ public class DevTestArea {
 	}
 	
 	@Test
+	public void testCoordinates() throws FindFailed {
+		
+//		Region reg = s.find("GetWin10SysBar.png");
+//		log.info(reg.getRect().toString());
+		
+		log.info(Integer.toString(s.getH()));
+		
+	}
+	
+	@Test
 	public void TestA() throws IOException {
 		
 		BufferedImage bimg = ImageIO.read(image);
@@ -43,7 +53,7 @@ public class DevTestArea {
 		log.info("Actual image height: {}", bimg.getHeight());
 	}
 
-	@Test()
+	@Test
 	public void TestB() throws FindFailed {
 
 		Region r = s.find("GetWin10SysBar.png");
@@ -51,7 +61,7 @@ public class DevTestArea {
 		log.info("Detected image width: {}", r.getW());
 		log.info("Detected image height: {}", r.getH());
 
-//		r.above().highlight(1);
+		r.above().highlight(1);
 //		r.below().highlight(1);
 //		r.above(50).highlight(1);
 //
