@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.KeyModifier;
+import org.sikuli.script.RunTime;
 import org.sikuli.script.Screen;
 
 /**
@@ -33,14 +34,16 @@ public class KeyboardControlSupport {
     public void selectAll() {
 
         log.info("Selecting all");
-        screen.type("a", KeyModifier.CTRL);
+        if (RunTime.get().runningMac) screen.type("a", KeyModifier.CMD);
+        else screen.type("a", KeyModifier.CTRL);
 
     }
 
     public void copyToBuffer() {
 
         log.info("Copying to buffer");
-        screen.type("c", KeyModifier.CTRL);
+        if (RunTime.get().runningMac) screen.type("c", KeyModifier.CMD);
+        else screen.type("c", KeyModifier.CTRL);
 
     }
 
