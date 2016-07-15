@@ -34,4 +34,10 @@ public class MouseControlSupport {
 
     }
 
+    public void doubleClickMiddleScreen() throws InterruptedException {
+
+        screen.getCenter().doubleClick();
+        sleeper.sleep(new Duration(1, TimeUnit.SECONDS));
+
+    }
 }

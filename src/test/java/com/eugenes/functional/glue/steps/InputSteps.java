@@ -49,6 +49,13 @@ public class InputSteps extends AbstractSteps {
 
     }
 
+    @When("^I doubleclick in the middle of the screen$")
+    public void i_doubleclick_in_the_middle_of_the_screen() throws FindFailed, InterruptedException {
+
+        mouse.doubleClickMiddleScreen();
+
+    }
+
     @When("^I type text: \"(.*?)\"$")
     public void i_type_text(final String text) throws Throwable {
 
