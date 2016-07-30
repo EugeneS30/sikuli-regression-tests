@@ -3,7 +3,7 @@ Feature: Search
 
   Scenario: Basic Latin type()
     Given I have navigated to "http://www.mytextarea.com/"
-    And I click in the middle of the screen
+    And I doubleclick in the middle of the screen
     When I type text: "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
     And I select all
     And I copy to buffer

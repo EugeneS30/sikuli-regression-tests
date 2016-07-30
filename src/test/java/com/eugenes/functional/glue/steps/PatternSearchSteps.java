@@ -445,7 +445,7 @@ public class PatternSearchSteps extends AbstractSteps {
 			final String patternFile) throws IOException {
 
 		String imagePath = System.getProperty("user.dir")
-				+ "\\src\\test\\resources\\patterns\\" + patternFile;
+				+ "/src/test/resources/patterns/" + patternFile;
 		BufferedImage image = ImageIO.read(new File(imagePath));
 
 		assertThat(image.getHeight()).isEqualTo(storedMatch.getH());
