@@ -10,7 +10,7 @@ Feature: Region Manipulation
     Given I have navigated to "http://sikulix.weebly.com/"
     When the pattern "QuickStartPlain.png" exists on the screen
     And I define the pattern "QuickStartPlain.png" as the Region
-    And I expand the Region "<direction>"
+    And I expand the Region "<direction>" 
     Then the resulting Region is "<result>" the original Region not including it
     
     Examples:

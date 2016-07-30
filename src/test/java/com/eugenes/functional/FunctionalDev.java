@@ -6,7 +6,7 @@ import cucumber.api.CucumberOptions;
 import cucumber.api.junit.Cucumber;
 
 /**
- * Manual runner. Will only execute the scenarios that are tagged with @tags
+ * Manual runner. Will only execute the scenarios that are tagged with @wip
  * 
  * @author eugene.shragovich
  */

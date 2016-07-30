@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.sikuli.script.FindFailed;
@@ -26,6 +27,7 @@ import org.sikuli.script.ObserverCallBack;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
+import org.sikuli.script.SikuliException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -55,6 +57,9 @@ public class PatternSearchSteps extends AbstractSteps {
 
 	@Inject
 	private FluentWait<WebDriver> wait;
+	
+	@Inject
+	private WebDriver driver;
 
 	// If the pattern was found by one of the steps it will be stored in this
 	// variable.
@@ -84,6 +89,59 @@ public class PatternSearchSteps extends AbstractSteps {
 	// Threshold value in pixels
 	@Value("${sikuli.onChange.threshold:50}")
 	private int onChangeThreshold;
+
+	@Given("^I am using screen number (\\d+)$")
+	public void i_am_using_screen_number(int screenNumber) throws SikuliException {
+		if (screenNumber > Screen.getNumberScreens()) {
+			throw new SikuliException("Invalid screen");
+		}
+
+		/**
+		 * Here we denote the screens as 1 and 2 but in Sikuli, the default
+		 * Screen is 0 and the secondary one is 1 accordingly.
+		 */
+		screen = Screen.getScreen(screenNumber - 1);
+		
+	}
+	
+	@When("^I relocate browser window to screen number (\\d+)$")
+	public void i_relocate_the_screen_to_window(final int screenNumber) {
+		
+		driver.manage().window().setPosition(new Point(Screen.getScreen(screenNumber-1).x, Screen.getScreen(screenNumber-1).y));
+		driver.manage().window().maximize();
+		
+		
+	}
+	
+
+	@Then("^there (?:are|is) (\\d+) screen(?:s)? detected$")
+	public void there_are_screens_detected(int availableScreensNumber)
+			throws Throwable {
+
+		assertThat(Screen.getNumberScreens()).isEqualTo(availableScreensNumber);
+
+	}
+
+	@Given("^the pattern \"(.*?)\" does not exist on screen (\\d+)$")
+	public void the_pattern_does_not_exist_on_screen(String arg1, int arg2)
+			throws Throwable {
+		// Write code here that turns the phrase above into concrete actions
+		throw new PendingException();
+	}
+
+	@When("^I wait for pattern \"(.*?)\" on screen (\\d+)$")
+	public void i_wait_for_pattern_on_screen(String arg1, int arg2)
+			throws Throwable {
+		// Write code here that turns the phrase above into concrete actions
+		throw new PendingException();
+	}
+
+	@Then("^the pattern \"(.*?)\" exists on screen (\\d+)$")
+	public void the_pattern_exists_on_screen(String arg1, int arg2)
+			throws Throwable {
+		// Write code here that turns the phrase above into concrete actions
+		throw new PendingException();
+	}
 
 	@When("^I wait for pattern \"([^\"]*)\"$")
 	public void i_wait_for_pattern(final String patternName) throws FindFailed {
@@ -131,58 +189,123 @@ public class PatternSearchSteps extends AbstractSteps {
 		}
 
 	}
-	
+
 	@Then("^the resulting Region is \"(.*?)\" the original Region (including|not including) it$")
-	public void resulting_Region_is_relative_to_the_original_Region(final String relation, final String maybe) {
-		
+	public void resulting_Region_is_relative_to_the_original_Region(
+			final String relation, final String maybe) {
+
 		boolean including = "including".equals(maybe);
-		
+
 		Rectangle originalRegionRect = region.getRect();
 		Rectangle relativeRegionRect = relativeRegion.getRect();
-		
-				
-		if ("above".equals(relation)) {
-			
-			assertThat(relativeRegionRect.getMinY()).isEqualTo(0);
-			assertThat(relativeRegionRect.getMaxY()).isEqualTo(originalRegionRect.getMinY());
-			assertThat(originalRegionRect.getMinX()).isEqualTo(relativeRegionRect.getMinX());
-			assertThat(originalRegionRect.getMaxX()).isEqualTo(relativeRegionRect.getMaxX());
-			
-		} else if ("below".equals(relation)) {
-			
-			assertThat(relativeRegionRect.getMaxY()).isEqualTo(screen.getH());
-			assertThat(relativeRegionRect.getMinY()).isEqualTo(originalRegionRect.getMaxY());
-			assertThat(originalRegionRect.getMinX()).isEqualTo(relativeRegionRect.getMinX());
-			assertThat(originalRegionRect.getMaxX()).isEqualTo(relativeRegionRect.getMaxX());
-			
-		} else if ("right".equals(relation)) {
-			
-			assertThat(relativeRegionRect.getMaxX()).isEqualTo(screen.getW());
-			assertThat(originalRegionRect.getMaxX()).isEqualTo(relativeRegionRect.getMinX());
-			assertThat(relativeRegionRect.getMinY()).isEqualTo(originalRegionRect.getMinY());
-			assertThat(relativeRegionRect.getMaxY()).isEqualTo(originalRegionRect.getMaxY());
-			
-		} else if ("left".equals(relation)) {
-			
-			assertThat(relativeRegionRect.getMinX()).isEqualTo(0);
-			assertThat(originalRegionRect.getMinX()).isEqualTo(relativeRegionRect.getMaxX());
-			assertThat(relativeRegionRect.getMinY()).isEqualTo(originalRegionRect.getMinY());
-			assertThat(relativeRegionRect.getMaxY()).isEqualTo(originalRegionRect.getMaxY());
-			
+
+		if (!including) {
+
+			if ("above".equals(relation)) {
+
+				assertThat(relativeRegionRect.getMinY()).isEqualTo(0);
+				assertThat(relativeRegionRect.getMaxY()).isEqualTo(
+						originalRegionRect.getMinY());
+				assertThat(originalRegionRect.getMinX()).isEqualTo(
+						relativeRegionRect.getMinX());
+				assertThat(originalRegionRect.getMaxX()).isEqualTo(
+						relativeRegionRect.getMaxX());
+
+			} else if ("below".equals(relation)) {
+
+				assertThat(relativeRegionRect.getMaxY()).isEqualTo(
+						screen.getH());
+				assertThat(relativeRegionRect.getMinY()).isEqualTo(
+						originalRegionRect.getMaxY());
+				assertThat(originalRegionRect.getMinX()).isEqualTo(
+						relativeRegionRect.getMinX());
+				assertThat(originalRegionRect.getMaxX()).isEqualTo(
+						relativeRegionRect.getMaxX());
+
+			} else if ("right".equals(relation)) {
+
+				assertThat(relativeRegionRect.getMaxX()).isEqualTo(
+						screen.getW());
+				assertThat(originalRegionRect.getMaxX()).isEqualTo(
+						relativeRegionRect.getMinX());
+				assertThat(relativeRegionRect.getMinY()).isEqualTo(
+						originalRegionRect.getMinY());
+				assertThat(relativeRegionRect.getMaxY()).isEqualTo(
+						originalRegionRect.getMaxY());
+
+			} else if ("left".equals(relation)) {
+
+				assertThat(relativeRegionRect.getMinX()).isEqualTo(0);
+				assertThat(originalRegionRect.getMinX()).isEqualTo(
+						relativeRegionRect.getMaxX());
+				assertThat(relativeRegionRect.getMinY()).isEqualTo(
+						originalRegionRect.getMinY());
+				assertThat(relativeRegionRect.getMaxY()).isEqualTo(
+						originalRegionRect.getMaxY());
+
+			} else {
+
+				throw new UnsupportedOperationException(
+						"Relative direction not supported");
+
+			}
+
+		} else if (including) {
+
+			if ("above".equals(relation)) {
+
+				assertThat(relativeRegionRect.getMinY()).isEqualTo(0);
+				assertThat(relativeRegionRect.getMaxY()).isEqualTo(
+						originalRegionRect.getMaxY());
+				assertThat(originalRegionRect.getMinX()).isEqualTo(
+						relativeRegionRect.getMinX());
+				assertThat(originalRegionRect.getMaxX()).isEqualTo(
+						relativeRegionRect.getMaxX());
+
+			} else if ("below".equals(relation)) {
+
+				assertThat(relativeRegionRect.getMaxY()).isEqualTo(
+						screen.getH());
+				assertThat(relativeRegionRect.getMinY()).isEqualTo(
+						originalRegionRect.getMinY());
+				assertThat(originalRegionRect.getMinX()).isEqualTo(
+						relativeRegionRect.getMinX());
+				assertThat(originalRegionRect.getMaxX()).isEqualTo(
+						relativeRegionRect.getMaxX());
+
+			} else if ("right".equals(relation)) {
+
+				assertThat(relativeRegionRect.getMaxX()).isEqualTo(
+						screen.getW());
+				assertThat(originalRegionRect.getMinX()).isEqualTo(
+						relativeRegionRect.getMinX());
+				assertThat(relativeRegionRect.getMinY()).isEqualTo(
+						originalRegionRect.getMinY());
+				assertThat(relativeRegionRect.getMaxY()).isEqualTo(
+						originalRegionRect.getMaxY());
+
+			} else if ("left".equals(relation)) {
+
+				assertThat(relativeRegionRect.getMinX()).isEqualTo(0);
+				assertThat(originalRegionRect.getMaxX()).isEqualTo(
+						relativeRegionRect.getMaxX());
+				assertThat(relativeRegionRect.getMinY()).isEqualTo(
+						originalRegionRect.getMinY());
+				assertThat(relativeRegionRect.getMaxY()).isEqualTo(
+						originalRegionRect.getMaxY());
+
+			} else {
+
+				throw new UnsupportedOperationException(
+						"Relative direction not supported");
+
+			}
+
 		} else {
-			
-			throw new UnsupportedOperationException("Relative direction not supported");
-			
+			throw new UnsupportedOperationException();
 		}
-		
 
 	}
-	
-//	@Then("^the resulting Region is \"(.*?)\" the original Region not including it$")
-//	public void resulting_region_in_relation_to_original_region(
-//			final String relativePosition, final String doeInclude) {
-//
-//	}
 
 	@When("^I observe the screen for pattern \"(.*?)\" to \"(.*?)\"$")
 	public void i_observe_the_screen_for_pattern_to(final String pattern,
@@ -268,17 +391,19 @@ public class PatternSearchSteps extends AbstractSteps {
 		});
 
 	}
-	
+
 	@Given("^I define the pattern \"(.*?)\" as the Region$")
-	public void i_define_pattern_as_region(final String pattern) throws FindFailed {
-		
+	public void i_define_pattern_as_region(final String pattern)
+			throws FindFailed {
+
 		setRegion(screen.find(pattern));
-			
+
 	}
 
 	@Given("^the pattern \"(.*?)\" (exists|does not exist) on the screen$")
-	public void the_pattern_maybe_visible_on_the_screen(final String pattern, final String maybe) throws Throwable {
-		
+	public void the_pattern_maybe_visible_on_the_screen(final String pattern,
+			final String maybe) throws Throwable {
+
 		log.info("Checking pattern existence");
 
 		boolean isShown = "exists".equals(maybe);

@@ -1,4 +1,4 @@
-@Search
+@Search @SingleScreen
 Feature: Search
 
   Scenario: Pattern is found using wait()
