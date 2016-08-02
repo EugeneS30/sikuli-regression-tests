@@ -51,33 +51,51 @@ import cucumber.api.java.en.When;
 @Component
 public class MultipleScreensSteps extends AbstractSteps {
 
-	@Autowired
-	private Screen screen;
+    @Autowired
+    private Screen screen;
 
-	@Inject
-	private SikuliSupport sikuli;
+    @Inject
+    private SikuliSupport sikuli;
 
-	@Inject
-	private FluentWait<WebDriver> wait;
+    @Inject
+    private FluentWait<WebDriver> wait;
 
-	@Inject
-	private WebDriver driver;
+    @Inject
+    private WebDriver driver;
 
-	@Given("^there (?:are|is) (\\d+) screen(?:s)? available$")
-	public void there_are_screens_available(int availableScreensNumber) throws Throwable {
+    private GraphicsDevice[] getGraphicsDevices() {
 
-		GraphicsEnvironment g = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] devices = g.getScreenDevices();
-		
-		assertThat(availableScreensNumber).isEqualTo(devices.length);
+        GraphicsEnvironment g = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        return g.getScreenDevices();
 
-//		for (int i = 0; i < devices.length; i++) {
-//			System.out.println("Width:"
-//					+ devices[i].getDisplayMode().getWidth());
-//			System.out.println("Height:"
-//					+ devices[i].getDisplayMode().getHeight());
-//		}
+    }
 
-	}
+    @Given("^there (?:are|is) (\\d+) screen(?:s)? available$")
+    public void there_are_screens_available(int availableScreensNumber) throws Throwable {
+
+        assertThat(availableScreensNumber).isEqualTo(getGraphicsDevices().length);
+
+    }
+    
+    @Then("^screens sizes detected properly$")
+    public void primazry_monitor_set() {
+        
+        Screen.getPrimaryId();
+        
+    }
+
+    @Then("^screens sizes detected properly$")
+    public void screens_sizes_detected_properly() {
+        
+        
+
+        // for (int i = 0; i < devices.length; i++) {
+        // System.out.println("Width:"
+        // + devices[i].getDisplayMode().getWidth());
+        // System.out.println("Height:"
+        // + devices[i].getDisplayMode().getHeight());
+        // }
+
+    }
 
 }
