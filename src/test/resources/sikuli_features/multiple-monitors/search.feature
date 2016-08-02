@@ -1,7 +1,6 @@
-@Search @MultipleScreen
-Feature: Search MultipleScreen
+@Search @MultipleMonitors
+Feature: Search MultipleMonitors
 
-  @wip
   Scenario: Pattern is found on secondary screen using wait()
     Given there are 2 screens available
     And I am using screen number 2
