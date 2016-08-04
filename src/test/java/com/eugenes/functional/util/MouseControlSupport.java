@@ -1,5 +1,6 @@
 package com.eugenes.functional.util;
 
+import java.awt.Point;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -28,6 +29,14 @@ public class MouseControlSupport {
 
 	@Inject
 	private SleeperImpl sleeper;
+	
+	public Point getMouseLocation() {
+		
+		Location location = Mouse.at();
+		
+		return new Point(location.x, location.y);
+		
+	}
 
 	public void clickMiddleScreen() throws InterruptedException {
 

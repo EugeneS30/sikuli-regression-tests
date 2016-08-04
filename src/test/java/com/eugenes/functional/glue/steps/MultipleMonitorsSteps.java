@@ -4,6 +4,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -57,62 +58,73 @@ public class MultipleMonitorsSteps extends AbstractSteps {
 	private Screen screen;
 
 	@Inject
-	private SikuliSupport sikuli;
-
-	@Inject
-	private FluentWait<WebDriver> wait;
-
-	@Inject
-	private WebDriver driver;
-	
-	@Inject
 	private MouseControlSupport mouse;
 
-	private GraphicsDevice[] getGraphicsDevices() {
+	@Setter
+	private int monitorsAvailable = -1;
 
+	private GraphicsDevice[] getGraphicsDevices() {
 		GraphicsEnvironment g = GraphicsEnvironment
 				.getLocalGraphicsEnvironment();
 		return g.getScreenDevices();
+	}
+
+	private int getActualMonitorsNumber() {
+
+		if (monitorsAvailable != -1) {
+			return monitorsAvailable;
+		}
+
+		int actualMonitorsNumber = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices().length;
+		setMonitorsAvailable(actualMonitorsNumber);
+		log.info("{} monitor/s identified", actualMonitorsNumber);
+		return actualMonitorsNumber;
 
 	}
-	
+
 	@Then("^the mouse can be moved to each monitor center$")
 	public void the_mouse_can_be_moved_to_each_monitor_center() {
-		
-		for (int i=0; i<Screen.getNumberScreens(); i++) {
+
+		for (int i = 0; i < getActualMonitorsNumber(); i++) {
 			Screen screen = new Screen(i);
 			mouse.moveToCoordinates(screen.getCenter());
+			
+			assertThat(MouseInfo.getPointerInfo().getLocation()).isEqualTo(mouse.getMouseLocation());
 		}
 
 	}
 
 	@Given("^there (?:are|is) (\\d+) monitor(?:s)? available$")
-	public void there_are_monitors_available(int availableMonitorsNumber)
-			throws Throwable {
+	public void there_are_n_monitors_available(int availableMonitorsNumber)	throws Throwable {
 
-		assertThat(availableMonitorsNumber).isEqualTo(
-				getGraphicsDevices().length);
+		assertThat(availableMonitorsNumber).isEqualTo(getGraphicsDevices().length);
 
 	}
 
 	@Given("^there (?:are|is) at least (\\d+) monitor(?:s)? available$")
-	public void there_are_at_least_monitors_available(
-			int availableMonitorsNumber) throws Throwable {
+	public void there_are_at_least_n_monitors_available(int minimumMonitorsNumber) throws Throwable {
 
-		assertThat(availableMonitorsNumber).isGreaterThanOrEqualTo(
-				availableMonitorsNumber);
+		assertThat(getActualMonitorsNumber()).isGreaterThanOrEqualTo(minimumMonitorsNumber);
 
 	}
 
 	@Given("^there (?:are|is) (\\d+) monitor(?:s)? detected$")
-	public void there_are_monitor_detected(int expectedToBeDetected)
-			throws Throwable {
+	public void there_are_n_monitors_detected(int expectedToBeDetected) throws Throwable {
 
 		assertThat(Screen.getNumberScreens()).isEqualTo(expectedToBeDetected);
 
 	}
 
-	@Then("^the primary monitor detected correctly$")
+	@Then("^all monitors have been detected$")
+	public void all_monitors_have_been_detected() throws Throwable {
+		int detectedMonitors = Screen.getNumberScreens();
+		log.info("{} monitors have been detected by Sikuli", detectedMonitors);
+
+		assertThat(detectedMonitors).isEqualTo(getActualMonitorsNumber());
+
+	}
+
+	@Then("^the primary monitor has been detected correctly$")
 	public void primary_monitor_set() {
 
 		assertThat(Screen.getPrimaryScreen().x).isEqualTo(0);
@@ -120,17 +132,15 @@ public class MultipleMonitorsSteps extends AbstractSteps {
 
 	}
 
-	@Then("^monitors sizes detected correctly$")
+	@Then("^all monitors sizes has been detected correctly$")
 	public void monitors_sizes_detected_properly() {
 
 		GraphicsDevice[] devices = getGraphicsDevices();
 
 		for (int i = 0; i < devices.length; i++) {
 
-			assertThat(devices[i].getDisplayMode().getHeight()).isEqualTo(
-					Screen.getScreen(i).getH());
-			assertThat(devices[i].getDisplayMode().getWidth()).isEqualTo(
-					Screen.getScreen(i).getW());
+			assertThat(devices[i].getDisplayMode().getHeight()).isEqualTo(Screen.getScreen(i).getH());
+			assertThat(devices[i].getDisplayMode().getWidth()).isEqualTo(Screen.getScreen(i).getW());
 
 		}
 

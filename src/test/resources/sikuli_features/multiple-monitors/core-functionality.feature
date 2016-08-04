@@ -2,17 +2,17 @@
 Feature: Multiple Monitors Core Functionality
 
   Scenario: All monitors have been detected
-    Given there are 2 monitors available
-    Then there are 2 monitors detected
+    Given there is at least 1 monitor available
+    Then all monitors have been detected
     
   Scenario: All monitors sizes have been detected correctly
-    Given there are 2 monitors available
-    Then monitors sizes detected correctly
+    Given there is at least 1 monitor available
+    Then all monitors sizes has been detected correctly
     
   Scenario: Primary monitor has been set correctly
-    Given there are 2 monitors available
-    And the primary monitor detected correctly
-    
+    Given there is at least 1 monitor available
+    Then the primary monitor has been detected correctly
+
   Scenario: Mouse movement to each monitor center
-    Given there are at least 2 monitors available
+    Given there is at least 1 monitor available
     Then the mouse can be moved to each monitor center 
