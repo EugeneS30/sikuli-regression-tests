@@ -2,7 +2,7 @@
 Feature: Search MultipleMonitors
 
   Scenario: Pattern is found on secondary screen using wait()
-    Given there are 2 screens available
+    Given there are 2 monitors available
     And I am using screen number 2
     And I relocate browser window to screen number 2
     And the pattern "QuickStartPlain.png" does not exist on the screen
