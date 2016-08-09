@@ -1,5 +1,8 @@
 package com.eugenes.functional.hooks;
 
+import lombok.extern.slf4j.Slf4j;
+
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
 import org.sikuli.script.Screen;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +28,12 @@ public class Hook {
     private Screen screen;
 
     @Before
-    public void prepareTest() {
+    public void prepareTestEnvironment() {
+
+        if (!isUsingPrimaryMonitor()) {
+            driver.manage().window().setPosition(new Point(0, 0));
+            driver.manage().window().maximize();
+        }
 
         driver.get("about:blank");
 
@@ -36,6 +44,15 @@ public class Hook {
 
         driver.manage().deleteAllCookies();
 
+    }
+
+    private boolean isUsingPrimaryMonitor() {
+
+        if (driver.manage().window().getPosition().equals(new Point(0, 0))) {
+            return true;
+        }
+
+        return false;
     }
 
 }
