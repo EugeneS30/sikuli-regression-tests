@@ -64,52 +64,22 @@ public class WebDriverConfiguration {
     @Value("${driver.scriptTimeout.unit:SECONDS}")
     private TimeUnit scriptTimeoutUnit;
 
-    @Value("${browser.window.height:0}")
-    private int windowHeight;
-
-    @Value("${browser.window.width:0}")
-    private int windowWidth;
-
     @Value("${wait.withTimeout.time}")
     private int withTimeoutTime;
 
     @Value("${wait.withTimeout.unit}")
     private TimeUnit withTimeoutUnit;
 
-    @Value("${wait.short.withTimeout.time:5}")
-    private int shortTimeoutTime;
-
-    @Value("${wait.short.withTimeout.unit:SECONDS}")
-    private TimeUnit shortTimeoutTimeUnit;
-
-    @Value("${test.server.protocol:http}")
-    private String serverProtocol;
-
-    @Value("${test.server.host:localhost}")
-    private String serverHost;
-
-    @Value("${test.server.port:80}")
-    private String serverPort;
-
-    @Value("${driver.remote.capability.browser:firefox}")
-    private String browser;
-
-//    @Bean
-//    public WaitConfiguration waitConfig() {
-//        return WaitConfiguration.builder().timeoutTime(withTimeoutTime).timeoutUnit(withTimeoutUnit).build();
-//    }
-
     @Bean
     @Primary
     public FluentWait<WebDriver> fluentWait() {
-        
+
         return new FluentWait<WebDriver>(webDriver).pollingEvery(pollingEveryTime, pollingEveryUnit)
                 .withTimeout(withTimeoutTime, withTimeoutUnit).ignoring(NoSuchElementException.class, StaleElementReferenceException.class);
     }
 
     @Slf4j
     @Configuration
-    @Profile({"local"})
     public static class LocalFirefoxDriverConfiguration {
 
         @Value("${http.proxy.host:none}")
