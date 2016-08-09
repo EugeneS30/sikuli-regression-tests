@@ -109,7 +109,6 @@ public class WebDriverConfiguration {
 
     @Slf4j
     @Configuration
-    @Profile({"local"})
     public static class LocalFirefoxDriverConfiguration {
 
         @Value("${http.proxy.host:none}")
