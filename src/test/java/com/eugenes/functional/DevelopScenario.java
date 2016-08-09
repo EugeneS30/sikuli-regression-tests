@@ -25,14 +25,8 @@ import com.eugenes.functional.glue.steps.PatternSearchSteps;
  *
  * Test class to aid the productivity of developing new scenarios.
  *
- * These are ignored by default, since they are covered by the main test cases
- * anyway, but are here to support development/debugging of particular issues.
- *
- * These test cases will generally expect some manual configuration to have been
- * completed prior to the test and as such may not be repeatable. They are
- * checked in for reference purposes only.
- *
- * @author tim.myerscough
+ * 
+ * @author eugene.shragovich
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
