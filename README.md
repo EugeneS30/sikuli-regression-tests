@@ -6,7 +6,13 @@ Public Sikuli API Regression test pack
 Usage:
 - have a valid Maven 3 install
 - download the repo
-- on a commandline being inside the project folder root<br>
-`mvn clean install` or `mvn test`
 - Project Lombok needs to be intergated with your IDE tio enable debugging. Instructions here:
 <a href="http://jnb.ociweb.com/jnb/jnbJan2010.html">Lombok Installation Instructions</a>
+
+<b>Running full tests suite</b>
+In project root folder (where the `pom.xml` file is) run `mvn test`.
+
+<b>Running a single scenario</b>
+- Find the scenario you want to run in the `*.feature` files.
+- Annotate the scenario with `@wip`.
+- Run the `FunctionalDev`.
