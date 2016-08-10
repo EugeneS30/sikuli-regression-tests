@@ -11,7 +11,9 @@ import cucumber.api.junit.Cucumber;
  */
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = {"classpath:sikuli_features"}, format = {"json:target/cucumber-dev/cucumber.json", "html:target/cucumber-dev/cucumber.html", "pretty"})
+@CucumberOptions(features = {"classpath:sikuli_features"},
+        format = {"json:target/cucumber-dev/cucumber.json", "html:target/cucumber-dev/cucumber.html", "pretty"},
+        tags = {"@RaiMan"})
 
 public class TestRunnerIT
 {
